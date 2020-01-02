@@ -35,7 +35,7 @@ urlpatterns = [
     path('docs/', include_docs_urls(title="信息管理系统")),
     path('api/', include(router.urls)),
     # re_path('^api/v1/PersonalInformationList$', PersonalInformation_list, name='PIL'),
-    re_path(r'^api-token-auth', views.obtain_auth_token),       # drf自带token登录验证
+    re_path(r'^login', views.obtain_auth_token),       # drf自带token登录验证
     # re_path(r'^login', obtain_jwt_token),      # JWT登录验证
 
 ]
