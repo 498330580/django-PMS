@@ -29,7 +29,7 @@ SECRET_KEY = 'asftav7_jwdo=^et@mm@nmhc+udy+7xv$q=%i5&15!aai+m4dy'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
