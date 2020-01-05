@@ -12,7 +12,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework import viewsets
 from rest_framework import filters
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, DjangoObjectPermissions
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .filters import PersonalInformationFilter
@@ -37,7 +37,7 @@ class PersonalInformationList(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = PersonalInformationSerializer
     pagination_class = PersonalInformationPagination
     authentication_classes = (TokenAuthentication, SessionAuthentication)    # 接口登录验证
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (DjangoObjectPermissions, IsAuthenticated)
 
     filter_backends = [DjangoFilterBackend,     # django_filters过滤
                        filters.SearchFilter,    # drf模糊查询

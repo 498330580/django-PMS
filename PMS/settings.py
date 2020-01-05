@@ -159,8 +159,8 @@ CORS_ORIGIN_ALLOW_ALL = False  # 是否允许所有跨域
 CORS_ORIGIN_WHITELIST = (
     'http://127.0.0.1:8080',
     'http://localhost:8080',
-    'http://127.0.0.1:63342',
-    'http://localhost:63342',
+    'http://192.168.31.11:8080:',
+    'http://ceshi.yaoling.com:8888'
 )
 # 允许的请求方式
 CORS_ALLOW_METHODS = (
