@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     # 'snippets.apps.SnippetsConfig',
     'apps.users.apps.UsersConfig',
     'apps.classification.apps.ClassificationConfig',
+    'apps.vue_pms.apps.VuePmsConfig',   # 前端设置
 ]
 
 MIDDLEWARE = [

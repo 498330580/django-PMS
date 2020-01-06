@@ -24,10 +24,12 @@ from rest_framework.authtoken import views      # drf登录
 # from rest_framework_jwt.views import obtain_jwt_token   # JWT登录验证
 
 from users.views import PersonalInformationList
+from apps.vue_pms.views import MenuViewset
 
 router = DefaultRouter(trailing_slash=False)
 
 router.register(r'PersonalInformationList', PersonalInformationList, basename='PersonalInformationList')
+router.register(r'Menu', MenuViewset, basename='Menu')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
