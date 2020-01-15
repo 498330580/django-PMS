@@ -13,5 +13,5 @@ class MenuViewset(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     retrieve:
         获取商品分类详情
     """
-    queryset = Menu.objects.filter(category_type=1)
+    queryset = Menu.objects.filter(category_type=1).filter(is_look=True)
     serializer_class = MenuSerializer

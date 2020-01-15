@@ -5,7 +5,7 @@ from django.db import models
 
 class Menu(models.Model):
     """
-    菜单设置
+    List：菜单设置
     """
     CATEGORY_TYPE = (
         (1, "一级菜单"),
@@ -31,3 +31,19 @@ class Menu(models.Model):
 
     def __str__(self):
         return "%s-%s" % (self.category_type, self.name)
+
+
+class WebsiteConfig(models.Model):
+    """
+    List:前端网站公共设置
+    """
+    name = models.CharField(default="", max_length=30, verbose_name='网站名称', help_text='设置网站的名称')
+    logo = models.ImageField(upload_to='WebsiteConfig/%Y/%m/%d/', default='WebsiteConfig/logo.png', max_length=250,
+                             verbose_name='网站LOGO')
+
+    class Meta:
+        verbose_name = "前端网站设置"
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.name

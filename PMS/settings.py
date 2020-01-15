@@ -191,3 +191,13 @@ CORS_ALLOW_HEADERS = (
 # JWT_AUTH = {'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),  # 设置7天过期
 #             'JWT_AUTH_HEADER_PREFIX': 'JWT',    # 设置JWT返回头
 #             }
+
+# 静态文件目录
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
+
+# 上传文件目录
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
