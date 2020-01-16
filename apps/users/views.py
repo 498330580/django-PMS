@@ -18,7 +18,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 # 重构token登录验证返回
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
-from rest_framework.status import HTTP_200_OK, HTTP_401_UNAUTHORIZED
+from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
 from .filters import PersonalInformationFilter
 
@@ -88,11 +88,8 @@ class Login(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
-        print('serializer')
         serializer.is_valid(raise_exception=True)
-        print('我早执行')
         user = serializer.validated_data['user']
-        print(user)
         token, created = Token.objects.get_or_create(user=user)
         return Response({'token': token.key, 'status': HTTP_200_OK})
 
