@@ -14,6 +14,7 @@ class Menu(models.Model):
     )
 
     name = models.CharField(default="", max_length=30, verbose_name="菜单名称", help_text="菜单名称")
+    path = models.CharField(default="welcome", max_length=50, verbose_name="菜单路径地址", help_text="前端要访问的菜单路径")
     desc = models.TextField(default="", verbose_name="菜单描述", help_text="菜单描述")
     index = models.IntegerField(default=999, verbose_name='菜单顺序')
     category_type = models.IntegerField(choices=CATEGORY_TYPE, verbose_name="类目级别", help_text="类目级别")
