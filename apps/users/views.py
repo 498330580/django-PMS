@@ -66,10 +66,13 @@ class PersonalInformationList(mixins.ListModelMixin, mixins.RetrieveModelMixin, 
             group_name = Group.objects.get(user=self.request.user).name
         username = self.request.user
         if self.request.user.is_superuser:
+            '''允许超级管理员查看全部信息'''
             return PersonalInformation.objects.all()
         elif group_name in ['人事管理']:
+            '''允许具有人事管理的人员查看全部未被标记删除的人员信息'''
             return PersonalInformation.objects.filter(delete=False)
         else:
+            '''其他用户查看本人信息'''
             return PersonalInformation.objects.filter(user=username)
 
     # def put(self, request, pk, *args, **kwargs):
