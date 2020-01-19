@@ -44,9 +44,9 @@ class PersonalInformation(models.Model):
     name = models.CharField(max_length=10, verbose_name='姓名', db_index=True)
     named = models.CharField(max_length=10, verbose_name='曾用名', default='无')
     nation = models.CharField(max_length=10, verbose_name='民族', default='汉族', choices=NATION)
-    sex = models.CharField(max_length=5, verbose_name='性别', choices=(('男', '男'), ('女', '女')),
+    sex = models.CharField(max_length=5, verbose_name='性别', choices=(('男', '男'), ('女', '女')), default='男',
                            help_text='默认为“男”,系统会根据身份证自动判断')
-    birthday = models.DateField(verbose_name='出生日期', help_text='系统会根据身份证自动填写')
+    birthday = models.DateField(verbose_name='出生日期', help_text='系统会根据身份证自动填写', blank=True)
     zodiac = models.CharField(verbose_name='生肖', max_length=5, default='不清',
                               choices=(('不清', '不清'), ('猴', '猴'), ('鸡', '鸡'), ('狗', '狗'), ('猪', '猪'), ('鼠', '鼠'),
                                        ('牛', '牛'), ('虎', '虎'), ('兔', '兔'), ('龙', '龙'), ('蛇', '蛇'), ('马', '马'),
@@ -60,7 +60,7 @@ class PersonalInformation(models.Model):
     jiguan = models.ForeignKey(DiZhi, verbose_name='籍贯', on_delete=models.SET_NULL, null=True, blank=True,
                                help_text='系统会根据身份证自动填写')
     permanent = models.CharField(max_length=100, verbose_name='户籍地址', help_text='身份证上的地址')
-    permanenttype = models.CharField(max_length=10,
+    permanenttype = models.CharField(max_length=10, default='',
                                      choices=(("城镇", "城镇"), ("农村", "农村"),),
                                      verbose_name="户籍类别")
     home = models.CharField(max_length=100, verbose_name='现居地址', help_text='现在居住的地址，能联系到的，可以和户籍地址相同')
