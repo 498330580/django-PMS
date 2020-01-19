@@ -103,21 +103,21 @@ class EducationInline(admin.TabularInline):
     model = Education
     # 默认显示条目的数量
     extra = 1
-    exclude = ['delete']
+    exclude = ['is_delete']
 
 
 class CarInline(admin.TabularInline):
     """车辆信息"""
     model = Car
     extra = 1
-    exclude = ['delete']
+    exclude = ['is_delete']
 
 
 class HomeInformationInline(admin.TabularInline):
     """家庭人员信息"""
     model = HomeInformation
     extra = 1
-    exclude = ['delete']
+    exclude = ['is_delete']
 
     # 不可修改字段
     def get_readonly_fields(self, request, obj=None):
@@ -149,25 +149,25 @@ class PhysicalExaminationInline(admin.TabularInline):
     """个人体检信息"""
     model = PhysicalExamination
     extra = 1
-    exclude = ['delete']
+    exclude = ['is_delete']
 
 
 class MeasureInformationInline(admin.TabularInline):
     """个人量体信息"""
     model = MeasureInformation
     extra = 1
-    exclude = ['delete']
+    exclude = ['is_delete']
 
 
 class PersonalinformationAdmin(admin.ModelAdmin):
     """自定义个人档案后台模块"""
     list_display = (
         'name', 'idnumber', 'sex', 'birthday', 'upper_case_age', 'permanenttype', 'dadui', 'zhongdui', 'bianzhi',
-        'create_time', 'update_time', 'delete')     # 列表显示字段
+        'create_time', 'update_time', 'is_delete')     # 列表显示字段
     list_filter = ('dadui', 'zhongdui', 'politics')  # 右侧过滤栏
     list_per_page = 25      # 列表显示数据条数
     date_hierarchy = 'entry'        # 顶部显示时间索引
-    list_editable = ('delete',)     # 列表页可编辑字段
+    list_editable = ('is_delete',)     # 列表页可编辑字段
     search_fields = ['name', 'idnumber']    # 设置搜索字段
 
     def get_list_filter(self, request):
@@ -209,7 +209,7 @@ class PersonalinformationAdmin(admin.ModelAdmin):
         自定义批量列表修改
         """
         if request.user.is_superuser:
-            message_bit = queryset.update(delete=True)
+            message_bit = queryset.update(is_delete=True)
             self.message_user(request, "%s 条信息被标记删除。" % message_bit)
         else:
             message_bit = '你没有权限。'
@@ -221,7 +221,7 @@ class PersonalinformationAdmin(admin.ModelAdmin):
         自定义批量列表修改
         """
         if request.user.is_superuser:
-            message_bit = queryset.update(delete=False)
+            message_bit = queryset.update(is_delete=False)
             self.message_user(request, "%s 条信息被取消标记删除。" % message_bit)
         else:
             message_bit = '你没有权限。'
@@ -254,9 +254,9 @@ class PersonalinformationAdmin(admin.ModelAdmin):
         if current_user_set.groups.all():
             current_group_set = Group.objects.get(user=current_user_set)
             if '普通用户' in str(current_group_set):
-                return qs.filter(user=request.user).filter(delete=False)
+                return qs.filter(user=request.user).filter(is_delete=False)
             elif '人事管理' in str(current_group_set):
-                return qs.filter(delete=False)
+                return qs.filter(is_delete=False)
         if request.user.is_superuser:
             return qs
 
@@ -297,14 +297,14 @@ class PersonalinformationAdmin(admin.ModelAdmin):
         elif current_user_set.groups.all():
             current_group_set = Group.objects.get(user=current_user_set)
             if '人事管理' in str(current_group_set):
-                fields = ['user', 'sex', 'birthday', 'constellation', 'jiguan', 'zodiac', 'delete']
+                fields = ['user', 'sex', 'birthday', 'constellation', 'jiguan', 'zodiac', 'is_delete']
                 return fields
             elif '普通用户' in str(current_group_set):
                 fields = ['user', 'sex', 'birthday', 'constellation', 'jiguan', 'zodiac',
                           'entry', 'entryzhuanzheng', 'zhuanfujing', 'fujingzhuanzheng', 'quit', 'category',
                           'gangweitype', 'veteran',
                           'gangweiname', 'dadui', 'zhongdui',
-                          'jiediao', 'bianzhi', 'delete']
+                          'jiediao', 'bianzhi', 'is_delete']
                 return fields
 
 

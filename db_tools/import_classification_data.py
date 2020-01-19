@@ -16,7 +16,6 @@ pwd = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(pwd + "../")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "PMS.settings")
 
-
 import django
 
 django.setup()
@@ -239,15 +238,106 @@ data = pd.read_excel('./data/大队人员统计表（2019.09.17）.xls')
 data.fillna(0, inplace=True)
 for index, row in data.iterrows():
     if not UserInformation.objects.filter(username=row['身份证号码'].upper()):
+        '''验证账户是否存在'''
         UserInformation.objects.create_user(username=row['身份证号码'].upper(), password='Tjzd68316070.')
         user = UserInformation.objects.get(username=row['身份证号码'].upper())
-        user.is_staff = True
+        # user.is_staff = True      # 可以登录后台
+        # user.is_active = True       # 人员有效
         user.last_name = row['姓名'][0]
         user.first_name = row['姓名'][1:]
         group = Group.objects.get(name='普通用户')
         user.groups.add(group)
         user.save()
 
+        if not PersonalInformation.objects.filter(idnumber=row['身份证号码'].upper()):
+            '''验证个人信息是否存在'''
+            print('写入:{}-{}'.format(row['身份证号码'].upper(), row['姓名']))
+            data_obj = PersonalInformation()
+            data_obj.user = user
+            data_obj.name = row['姓名']
+            data_obj.named = row['曾用名']
+            data_obj.idnumber = row['身份证号码'].upper()
+            data_obj.sex = GetInformation(row['身份证号码'].upper()).get_sex()
+            data_obj.birthday = datetime.date(
+                *map(int, (GetInformation(row['身份证号码'].upper()).get_birthday()).split('-')))
+            data_obj.zodiac = GetInformation(row['身份证号码'].upper()).get_zodiac()
+            data_obj.constellation = GetInformation(row['身份证号码'].upper()).get_constellation()
+            data_obj.jiguan = DiZhi.objects.get(dizhi_id=GetInformation(row['身份证号码'].upper()).get_6())
+            data_obj.permanent = row['户籍地址']
+            data_obj.permanenttype = row['户籍类别']
+            data_obj.home = row['现居地']
+            data_obj.hobby = row['爱好、特长']
+            data_obj.politics = row['政治面貌']
+            if row['入党/团时间'] != '无':
+                """判断并写入入党团时间"""
+                data_obj.politicstime = row['入党/团时间']
+            data_obj.category = CategoryType.objects.get(name=row['人员类别'])
+            data_obj.veteran = DemobilizedType.objects.get(name=row['退伍军人'])
+            data_obj.marriage = row['婚否']
+            data_obj.drivinglicense = DrivingLicenseType.objects.get(name=row['驾照'])
+            data_obj.entry = row['入职时间']
+            data_obj.entryzhuanzheng = row['入职时间'] - relativedelta(months=-1)
+            if row['转辅时间'] != '未转':
+                """判断并写入转辅警的时间"""
+                data_obj.zhuanfujing = row['转辅时间']
+                data_obj.fujingzhuanzheng = row['转辅时间'] - relativedelta(months=-2)
+            data_obj.mobile = row['联系电话']
+            if row['离职时间'] != '未离职':
+                """判断并写入离职时间"""
+                data_obj.quit = row['离职时间']
+            data_obj.dadui = DaDuiType.objects.get(name=row['所属大队'])
+            if row['所属中队'] != '未分配':
+                """写入中队信息"""
+                data_obj.zhongdui = ZhongDuiType.objects.get(name=row['所属中队'])
+            data_obj.jiediao = Borrow.objects.get(name=row['是否借调'])
+            data_obj.bianzhi = Organization.objects.get(name=row['编制位置'])
+            data_obj.economics = Economics.objects.get(name=row['家庭经济状况'])
+            data_obj.sources = Sources.objects.get(name=row['家庭经济来源'])
+            data_obj.nation = '汉族'
+            if row['人员类别'] == '勤务辅警':
+                data_obj.gangweitype = PostType.objects.get(name='治安辅助')
+                data_obj.gangweiname = PostName.objects.get(name='维稳勤务岗')
+            elif row['人员类别'] == '协勤队员':
+                data_obj.gangweitype = PostType.objects.get(name='维稳协勤')
+                data_obj.gangweiname = PostName.objects.get(name='维稳协勤岗')
+            elif row['人员类别'] == '特勤队员':
+                data_obj.gangweitype = PostType.objects.get(name='看护特勤')
+                data_obj.gangweiname = PostName.objects.get(name='看护特勤岗')
+            else:
+                data_obj.gangweitype = PostType.objects.get(name='警务保障')
+                data_obj.gangweiname = PostName.objects.get(name='后勤服务岗')
+            data_obj.save()
+
+            measureinformation = MeasureInformation()
+            measureinformation.name = data_obj
+            measureinformation.year = Year.objects.get(year=2019)
+            measureinformation.shengao = row['身高(CM)']
+            measureinformation.tizhong = row['体重(KG)']
+            measureinformation.xiongwei = row['净胸围(CM)']
+            measureinformation.jiankuan = row['肩宽(CM)']
+            measureinformation.xiuchang = row['袖长(CM)']
+            measureinformation.yaowei = row['平时腰围(CM)']
+            measureinformation.tunwei = row['臀净围(CM)']
+            measureinformation.duwei = row['肚围(CM)']
+            measureinformation.kuchang = row['裤长(CM)']
+            measureinformation.datuiwei = row['大腿围(CM)']
+            measureinformation.maowei = row['帽围(CM)']
+            measureinformation.xiezi = row['鞋子(CM)']
+            measureinformation.save()
+
+            if row['车牌号码'] != '无':
+                car = Car()
+                car.name = data_obj
+                car.vehicle = row['车牌号码']
+                car.vehiclecategory = CarType.objects.get(name=row['车辆类别'])
+                car.save()
+        else:
+            if not PersonalInformation.objects.filter(user=user):
+                personalinformation = PersonalInformation.objects.get(idnumber=row['身份证号码'].upper())
+                personalinformation.user = user
+                personalinformation.save()
+    else:
+        user = UserInformation.objects.get(username=row['身份证号码'].upper())
         if not PersonalInformation.objects.filter(idnumber=row['身份证号码'].upper()):
             print('写入:{}-{}'.format(row['身份证号码'].upper(), row['姓名']))
             data_obj = PersonalInformation()
@@ -334,5 +424,4 @@ for index, row in data.iterrows():
                 personalinformation = PersonalInformation.objects.get(idnumber=row['身份证号码'].upper())
                 personalinformation.user = user
                 personalinformation.save()
-                pass
 print("写入数据结束")

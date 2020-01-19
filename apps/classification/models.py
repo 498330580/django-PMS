@@ -14,7 +14,7 @@ class CategoryType(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '人员类别信息'
@@ -36,7 +36,7 @@ class DemobilizedType(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '退伍军人信息'
@@ -58,7 +58,7 @@ class DrivingLicenseType(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '驾照类别信息'
@@ -80,7 +80,7 @@ class DaDuiType(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '大队类别信息'
@@ -102,7 +102,7 @@ class ZhongDuiType(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '中队（小组）类别信息'
@@ -124,7 +124,7 @@ class Organization(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '编制信息'
@@ -146,7 +146,7 @@ class Borrow(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '借调位置信息'
@@ -169,7 +169,7 @@ class Economics(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '经济状态分类信息'
@@ -192,7 +192,7 @@ class Sources(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '经济来源分类信息'
@@ -228,7 +228,7 @@ class EducationType(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '学历类型信息'
@@ -250,7 +250,7 @@ class AcademicDegreeType(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '学位类型信息'
@@ -272,7 +272,7 @@ class CarType(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '车辆类别信息'
@@ -294,7 +294,7 @@ class PostType(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '岗位类别信息'
@@ -316,7 +316,7 @@ class PostName(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '岗位名称信息'
@@ -338,7 +338,7 @@ class XueLiInformation(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '学历说明分类'
@@ -360,7 +360,7 @@ class RenYuanXianZhuang(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '人员现状'
@@ -382,7 +382,7 @@ class ShenFenGuiLei(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '身份归类'
@@ -404,7 +404,7 @@ class ChengWei(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '称谓'
@@ -426,7 +426,7 @@ class TiJianJieGuo(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '体检结果'
@@ -446,7 +446,7 @@ class Year(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '体检年份'
@@ -467,7 +467,7 @@ class DiZhi(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '籍贯编码'

@@ -6,7 +6,7 @@ from .models import Menu
 from .serializers import MenuSerializer
 
 
-class MenuViewset(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class MenuViewset(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     """
     list:
         商品分类列表数据

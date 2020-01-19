@@ -1,4 +1,4 @@
-from django.db import models
+# from django.db import models
 
 # Create your models here.
 
@@ -44,9 +44,9 @@ class PersonalInformation(models.Model):
     name = models.CharField(max_length=10, verbose_name='姓名', db_index=True)
     named = models.CharField(max_length=10, verbose_name='曾用名', default='无')
     nation = models.CharField(max_length=10, verbose_name='民族', default='汉族', choices=NATION)
-    sex = models.CharField(max_length=5, verbose_name='性别', default='男', choices=(('男', '男'), ('女', '女')),
+    sex = models.CharField(max_length=5, verbose_name='性别', choices=(('男', '男'), ('女', '女')),
                            help_text='默认为“男”,系统会根据身份证自动判断')
-    birthday = models.DateField(verbose_name='出生日期', null=True, blank=True, help_text='系统会根据身份证自动填写')
+    birthday = models.DateField(verbose_name='出生日期', help_text='系统会根据身份证自动填写')
     zodiac = models.CharField(verbose_name='生肖', max_length=5, default='不清',
                               choices=(('不清', '不清'), ('猴', '猴'), ('鸡', '鸡'), ('狗', '狗'), ('猪', '猪'), ('鼠', '鼠'),
                                        ('牛', '牛'), ('虎', '虎'), ('兔', '兔'), ('龙', '龙'), ('蛇', '蛇'), ('马', '马'),
@@ -56,8 +56,8 @@ class PersonalInformation(models.Model):
                                               ('白羊座', '白羊座'), ('金牛座', '金牛座'), ('双子座', '双子座'), ('巨蟹座', '巨蟹座'),
                                               ('狮子座', '狮子座'), ('处女座', '处女座'), ('天秤座', '天秤座'), ('天蝎座', '天蝎座'),
                                               ('射手座', '射手座')), help_text='系统会根据身份证自动填写')
-    idnumber = models.CharField(max_length=18, verbose_name="身份证", help_text="如果最后一位为X请大写", unique=True, db_index=True)
-    jiguan = models.ForeignKey(DiZhi, verbose_name='籍贯', on_delete=models.DO_NOTHING, default=1,
+    idnumber = models.CharField(max_length=18, verbose_name="身份证", help_text="如果最后一位为X请大写", db_index=True)
+    jiguan = models.ForeignKey(DiZhi, verbose_name='籍贯', on_delete=models.SET_NULL, null=True, blank=True,
                                help_text='系统会根据身份证自动填写')
     permanent = models.CharField(max_length=100, verbose_name='户籍地址', help_text='身份证上的地址')
     permanenttype = models.CharField(max_length=10,
@@ -71,9 +71,10 @@ class PersonalInformation(models.Model):
                                 verbose_name='政治面貌',
                                 default="群众")
     politicstime = models.DateField(verbose_name='入党/团时间', null=True, blank=True)
-    category = models.ForeignKey(CategoryType, verbose_name='人员类别', on_delete=models.DO_NOTHING, null=True, blank=True,
+    category = models.ForeignKey(CategoryType, verbose_name='人员类别', on_delete=models.SET_NULL, null=True, blank=True,
                                  help_text='本信息由管理员填写')
-    veteran = models.ForeignKey(DemobilizedType, verbose_name='退役类别', on_delete=models.DO_NOTHING, default=1)
+    veteran = models.ForeignKey(DemobilizedType, verbose_name='退役类别', on_delete=models.SET_NULL, null=True,
+                                blank=True, )
     marriage = models.CharField(max_length=10,
                                 choices=(("已婚", "已婚"), ("未婚", "未婚"), ("离婚", "离婚"), ('丧偶', '丧偶')),
                                 default='未婚',
@@ -85,26 +86,29 @@ class PersonalInformation(models.Model):
     zhuanfujing = models.DateField(verbose_name='辅警入职时间', null=True, blank=True, help_text='本信息由管理员填写')
     fujingzhuanzheng = models.DateField(verbose_name='辅警入职转正时间', null=True, blank=True, help_text='本信息由管理员填写')
     quit = models.DateField(verbose_name='离职/调离时间', null=True, blank=True, help_text='本信息由管理员填写')
-    dadui = models.ForeignKey(DaDuiType, verbose_name='所属大队', on_delete=models.DO_NOTHING, null=True, blank=True,
+    dadui = models.ForeignKey(DaDuiType, verbose_name='所属大队', on_delete=models.SET_NULL, null=True, blank=True,
                               help_text='本信息由管理员填写')
-    zhongdui = models.ForeignKey(ZhongDuiType, verbose_name='所属中队（小组）', on_delete=models.DO_NOTHING, null=True,
+    zhongdui = models.ForeignKey(ZhongDuiType, verbose_name='所属中队（小组）', on_delete=models.SET_NULL, null=True,
                                  blank=True, help_text='本信息由管理员填写')
-    jiediao = models.ForeignKey(Borrow, verbose_name='借调位置', on_delete=models.DO_NOTHING, null=True, blank=True,
+    jiediao = models.ForeignKey(Borrow, verbose_name='借调位置', on_delete=models.SET_NULL, null=True, blank=True,
                                 help_text='本信息由管理员填写')
-    bianzhi = models.ForeignKey(Organization, verbose_name='编制位置', on_delete=models.DO_NOTHING, null=True, blank=True,
+    bianzhi = models.ForeignKey(Organization, verbose_name='编制位置', on_delete=models.SET_NULL, null=True, blank=True,
                                 help_text='本信息由管理员填写')
-    economics = models.ForeignKey(Economics, verbose_name='家庭经济状态', on_delete=models.DO_NOTHING)
-    sources = models.ForeignKey(Sources, verbose_name='经济来源', on_delete=models.DO_NOTHING)
-    gangweitype = models.ForeignKey(PostType, verbose_name='岗位类别', on_delete=models.DO_NOTHING, null=True, blank=True,
+    economics = models.ForeignKey(Economics, verbose_name='家庭经济状态', on_delete=models.SET_NULL, null=True, blank=True, )
+    sources = models.ForeignKey(Sources, verbose_name='经济来源', on_delete=models.SET_NULL, null=True, blank=True, )
+    gangweitype = models.ForeignKey(PostType, verbose_name='岗位类别', on_delete=models.SET_NULL, null=True, blank=True,
                                     help_text='本信息由管理员填写')
-    gangweiname = models.ForeignKey(PostName, verbose_name='岗位名称', on_delete=models.DO_NOTHING, null=True, blank=True,
+    gangweiname = models.ForeignKey(PostName, verbose_name='岗位名称', on_delete=models.SET_NULL, null=True, blank=True,
                                     help_text='本信息由管理员填写')
+    zhuangtai = models.CharField(verbose_name='人员状态', max_length=6, choices=(('在岗', '在岗'), ('离职', '离职'), ('调离', '调离')),
+                                 default='在岗')
+    beizhu = models.CharField(default='', verbose_name='备注', max_length=500)
     # 创建时间
     create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '个人档案'
@@ -112,6 +116,7 @@ class PersonalInformation(models.Model):
         ordering = ['-entry']
 
     def __str__(self):
+        # return self.name
         return "%s-%s-%s" % (self.name, self.dadui, self.idnumber)
 
 
@@ -135,7 +140,7 @@ class Education(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '学历信息'
@@ -157,7 +162,7 @@ class Car(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '车辆信息'
@@ -189,7 +194,7 @@ class HomeInformation(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '家庭成员信息'
@@ -211,7 +216,7 @@ class PhysicalExamination(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '个人体检信息'
@@ -243,7 +248,7 @@ class MeasureInformation(models.Model):
     # 最后更新时间
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     # 是否删除
-    delete = models.BooleanField(default=False, verbose_name='是否删除')
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '个人量体信息'

@@ -12,7 +12,7 @@ from apps.users.models import PersonalInformation, UserInformation
 class UserInformationSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserInformation
-        fields = ('username',)
+        fields = ('id', 'username',)
 
 
 class PersonalInformationSerializer(serializers.ModelSerializer):
@@ -22,3 +22,4 @@ class PersonalInformationSerializer(serializers.ModelSerializer):
     class Meta:
         model = PersonalInformation
         fields = "__all__"
+

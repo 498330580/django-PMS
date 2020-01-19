@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     # 'snippets.apps.SnippetsConfig',
     'apps.users.apps.UsersConfig',
     'apps.classification.apps.ClassificationConfig',
-    'apps.vue_pms.apps.VuePmsConfig',   # 前端设置
+    'apps.vue_pms.apps.VuePmsConfig',  # 前端设置
 ]
 
 MIDDLEWARE = [
@@ -88,13 +88,17 @@ WSGI_APPLICATION = 'PMS.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'pmsystem',
+        'NAME': 'pms',
         'USER': 'root',
         'PASSWORD': '19920124Zhy@.',
         'HOST': '',
         'PORT': '',
         'OPTIONS': {"init_command": "SET default_storage_engine=INNODB;"},
     }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
 }
 
 # Password validation

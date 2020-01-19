@@ -3,8 +3,8 @@ from django.shortcuts import render
 
 # Create your views here.
 
-from apps.users.models import PersonalInformation
-from .serializers import PersonalInformationSerializer
+from apps.users.models import PersonalInformation, UserInformation
+from .serializers import PersonalInformationSerializer, UserInformationSerializer
 # from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -12,8 +12,8 @@ from rest_framework import mixins, generics
 from rest_framework.pagination import PageNumberPagination
 from rest_framework import viewsets
 from rest_framework import filters
-from rest_framework.authentication import TokenAuthentication, SessionAuthentication
-from rest_framework.permissions import IsAuthenticated, DjangoObjectPermissions
+from rest_framework.authentication import TokenAuthentication, SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from django_filters.rest_framework import DjangoFilterBackend
 # 重构token登录验证返回
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -33,16 +33,17 @@ class PersonalInformationPagination(PageNumberPagination):
     max_page_size = 100
 
 
-class PersonalInformationList(mixins.ListModelMixin, viewsets.GenericViewSet):
+class PersonalInformationList(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
+                              mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
     """
     List:
         个人信息列表页.
     """
-    queryset = PersonalInformation.objects.all()
+    # queryset = PersonalInformation.objects.all()
     serializer_class = PersonalInformationSerializer
     pagination_class = PersonalInformationPagination
-    authentication_classes = (TokenAuthentication, SessionAuthentication)  # 接口登录验证
-    permission_classes = (DjangoObjectPermissions, IsAuthenticated)
+    authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
+    permission_classes = (IsAuthenticated, DjangoModelPermissions)
 
     filter_backends = [DjangoFilterBackend,  # django_filters过滤
                        filters.SearchFilter,  # drf模糊查询
@@ -60,12 +61,22 @@ class PersonalInformationList(mixins.ListModelMixin, viewsets.GenericViewSet):
     ordering_fields = ['category']
 
     def get_queryset(self):
-        group_name = Group.objects.get(user=self.request.user).name
+        group_name = ''
+        if Group.objects.filter(user=self.request.user):
+            group_name = Group.objects.get(user=self.request.user).name
         username = self.request.user
-        if self.request.user.is_superuser or group_name in ['人事管理']:
+        if self.request.user.is_superuser:
             return PersonalInformation.objects.all()
+        elif group_name in ['人事管理']:
+            return PersonalInformation.objects.filter(delete=False)
         else:
             return PersonalInformation.objects.filter(user=username)
+
+    # def put(self, request, pk, *args, **kwargs):
+    #     return self.update(request, *args, **kwargs)
+    #
+    # def delete(self, request, *args, **kwargs):
+    #     return self.destroy(request, *args, **kwargs)
 
 
 # class PersonalInformationList(APIView):
@@ -77,9 +88,11 @@ class PersonalInformationList(mixins.ListModelMixin, viewsets.GenericViewSet):
 #         serializer = PersonalInformationSerializer(personalinformation, many=True)
 #         return Response(serializer.data)
 
-class PersonalInformationAdd(mixins.CreateModelMixin, viewsets.GenericViewSet):
-    """添加个人信息"""
-    pass
+
+class UserInformationDel(mixins.DestroyModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+    """删除个人信息"""
+    queryset = UserInformation.objects.all()
+    serializer_class = UserInformationSerializer
 
 
 class Login(ObtainAuthToken):
@@ -92,4 +105,3 @@ class Login(ObtainAuthToken):
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
         return Response({'token': token.key, 'status': HTTP_200_OK})
-
