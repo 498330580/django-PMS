@@ -47,9 +47,9 @@ INSTALLED_APPS = [
     # 'drf_multiple_model',   # 解决drf无法同时渲染多个model问题  使用“django-rest-multiple-models”
     # 'viewflow',     # 工作流
     # 'snippets.apps.SnippetsConfig',
-    'apps.users',
-    'apps.classification',
-    'apps.vue_pms',  # 前端设置
+    'users.apps.UsersConfig',
+    'classification.apps.ClassificationConfig',
+    'vue_pms.apps.VuePmsConfig',  # 前端设置
 ]
 
 MIDDLEWARE = [

@@ -4,7 +4,7 @@ __author__ = 'bobby'
 import django_filters
 from django.db.models import Q
 
-from apps.users.models import PersonalInformation
+from .models import PersonalInformation
 
 
 class PersonalInformationFilter(django_filters.rest_framework.FilterSet):

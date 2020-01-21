@@ -3,7 +3,7 @@ from django.shortcuts import render
 
 # Create your views here.
 
-from apps.users.models import PersonalInformation, UserInformation
+from .models import PersonalInformation, UserInformation
 from .serializers import PersonalInformationSerializer, UserInformationSerializer
 # from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -92,10 +92,14 @@ class PersonalInformationList(mixins.ListModelMixin, mixins.RetrieveModelMixin, 
 #         return Response(serializer.data)
 
 
-class UserInformationDel(mixins.DestroyModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
-    """删除个人信息"""
-    queryset = UserInformation.objects.all()
+class UserInformationList(mixins.DestroyModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin,
+                          mixins.CreateModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    """List：个人信息"""
+    queryset = UserInformation.objects.filter(is_superuser=False)
     serializer_class = UserInformationSerializer
+    pagination_class = PersonalInformationPagination
+    authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
+    permission_classes = (IsAuthenticated, DjangoModelPermissions)
 
 
 class Login(ObtainAuthToken):

@@ -6,13 +6,14 @@
 # @Software: PyCharm
 
 from rest_framework import serializers
-from apps.users.models import PersonalInformation, UserInformation
+from .models import PersonalInformation, UserInformation
 
 
 class UserInformationSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserInformation
-        fields = ('id', 'username',)
+        # fields = '__all__'
+        exclude = ['password', 'is_superuser']
 
 
 class PersonalInformationSerializer(serializers.ModelSerializer):
@@ -26,4 +27,3 @@ class PersonalInformationSerializer(serializers.ModelSerializer):
         # extra_kwargs = {'user': {'required': False}}
 
         # depth = 1
-

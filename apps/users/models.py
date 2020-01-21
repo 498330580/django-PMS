@@ -4,7 +4,7 @@
 import datetime
 from dateutil.relativedelta import relativedelta
 
-from apps.classification.models import *
+from classification.models import *
 from django.contrib.auth.models import AbstractUser
 
 from .tools import GetInformation
@@ -37,6 +37,7 @@ class UserInformation(AbstractUser):
     class Meta:
         verbose_name = '用户信息'
         verbose_name_plural = verbose_name
+        ordering = ['id']
 
     def __str__(self):
         return self.username

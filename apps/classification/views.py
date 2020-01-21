@@ -6,7 +6,7 @@ from drf_multiple_model.viewsets import ObjectMultipleModelAPIViewSet
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 
 from .serializers import *
-from apps.classification.models import *
+from classification.models import *
 
 
 # from rest_framework.authentication import TokenAuthentication, SessionAuthentication, BasicAuthentication
