@@ -1,14 +1,15 @@
-from django.contrib.auth.models import Group
-from django.shortcuts import render
+from django.contrib.auth.models import Group, Permission
+
+# from django.shortcuts import render
 
 # Create your views here.
 
 from .models import PersonalInformation, UserInformation
-from .serializers import PersonalInformationSerializer, UserInformationSerializer
+from .serializers import PersonalInformationSerializer, UserInformationSerializer, GroupSerializer, PermissionSerializer
 # from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from rest_framework import mixins, generics
+from rest_framework import mixins
 from rest_framework.pagination import PageNumberPagination
 from rest_framework import viewsets
 from rest_framework import filters
@@ -18,7 +19,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 # 重构token登录验证返回
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
-from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from rest_framework.status import HTTP_200_OK
 
 from .filters import PersonalInformationFilter
 
@@ -100,6 +101,24 @@ class UserInformationList(mixins.DestroyModelMixin, mixins.ListModelMixin, mixin
     pagination_class = PersonalInformationPagination
     authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
     permission_classes = (IsAuthenticated, DjangoModelPermissions)
+
+
+class GroupList(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+        List:用户组
+    """
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
+    authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
+    permission_classes = (IsAuthenticated, DjangoModelPermissions)
+
+
+class PermissionList(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+     List:权限列表
+    """
+    queryset = Permission.objects.all()
+    serializer_class = PermissionSerializer
 
 
 class Login(ObtainAuthToken):

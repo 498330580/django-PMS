@@ -23,7 +23,7 @@ from rest_framework.routers import DefaultRouter
 # from rest_framework.authtoken import views      # drf登录
 # from rest_framework_jwt.views import obtain_jwt_token   # JWT登录验证
 
-from apps.users.views import PersonalInformationList, Login, UserInformationList
+from apps.users.views import PersonalInformationList, Login, UserInformationList, GroupList, PermissionList
 from apps.vue_pms.views import MenuViewset
 from apps.classification.views import Type
 
@@ -33,6 +33,8 @@ router.register(r'PersonalInformationList', PersonalInformationList, basename='P
 router.register(r'Menu', MenuViewset, basename='Menu')
 router.register(r'UserInformation', UserInformationList, basename='UserInformation')
 router.register(r'Type', Type, basename='Type')
+router.register(r'GroupList', GroupList, basename='GroupList')
+router.register(r'PermissionList', PermissionList, basename='PermissionList')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

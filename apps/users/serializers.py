@@ -5,6 +5,8 @@
 # @File    : serializers.py
 # @Software: PyCharm
 
+from django.contrib.auth.models import Group, Permission
+
 from rest_framework import serializers
 from .models import PersonalInformation, UserInformation
 
@@ -27,3 +29,17 @@ class PersonalInformationSerializer(serializers.ModelSerializer):
         # extra_kwargs = {'user': {'required': False}}
 
         # depth = 1
+
+
+class GroupSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Group
+        exclude = []
+
+
+class PermissionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Permission
+        exclude = []
