@@ -6,66 +6,69 @@ from .models import *
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy
 from django.contrib.auth.models import Group
-import datetime
 from dateutil.relativedelta import relativedelta
 from classification.models import DiZhi
+
+import datetime
+
+from .tools import GetInformation
 
 admin.AdminSite.empty_value_display = "无"  # 自定义空白显示的内容为None
 
 
-# 用户自定义模块
-class GetInformation(object):
-    """根据身份证判断生日、男女、年龄、生肖"""
-
-    def __init__(self, id):
-        self.id = id
-        self.birth_year = int(self.id[6:10])
-        self.birth_month = int(self.id[10:12])
-        self.birth_day = int(self.id[12:14])
-
-    def get_birthday(self):
-        """通过身份证号获取出生日期"""
-        birthday = "{0}-{1}-{2}".format(self.birth_year, self.birth_month, self.birth_day)
-        return birthday
-
-    def get_sex(self):
-        """男生：1 女生：2"""
-        num = int(self.id[16:17])
-        if num % 2 == 0:
-            return '女'
-        else:
-            return '男'
-
-    def get_age(self):
-        """通过身份证号获取年龄"""
-        now = (datetime.datetime.now() + datetime.timedelta(days=1))
-        year = now.year
-        month = now.month
-        day = now.day
-
-        if year == self.birth_year:
-            return 0
-        else:
-            if self.birth_month > month or (self.birth_month == month and self.birth_day > day):
-                return year - self.birth_year - 1
-            else:
-                return year - self.birth_year
-
-    def get_zodiac(self):
-        """通过身份证判断生肖"""
-        return '猴鸡狗猪鼠牛虎兔龙蛇马羊'[self.birth_year % 12]
-
-    def get_constellation(self):
-        n = ('摩羯座', '水瓶座', '双鱼座', '白羊座', '金牛座', '双子座',
-             '巨蟹座', '狮子座', '处女座', '天秤座', '天蝎座', '射手座')
-        d = (
-            (1, 20), (2, 19), (3, 21), (4, 21), (5, 21), (6, 22), (7, 23), (8, 23), (9, 23), (10, 23), (11, 23),
-            (12, 23))
-        return n[len(list(filter(lambda y: y <= (self.birth_month, self.birth_day), d))) % 12]
-
-    def get_6(self):
-        """通过身份证获取前三位籍贯编码"""
-        return self.id[:6]
+# # 用户自定义模块
+# class GetInformation(object):
+#     """根据身份证判断生日、男女、年龄、生肖"""
+#
+#     def __init__(self, id):
+#         self.id = id
+#         self.birth_year = int(self.id[6:10])
+#         self.birth_month = int(self.id[10:12])
+#         self.birth_day = int(self.id[12:14])
+#
+#     def get_birthday(self):
+#         """通过身份证号获取出生日期"""
+#         birthday = "{0}-{1}-{2}".format(self.birth_year, self.birth_month, self.birth_day)
+#         return birthday
+#
+#     def get_sex(self):
+#         """男生：1 女生：2"""
+#         num = int(self.id[16:17])
+#         if num % 2 == 0:
+#             return '女'
+#         else:
+#             return '男'
+#
+#     def get_age(self):
+#         """通过身份证号获取年龄"""
+#         now = (datetime.datetime.now() + datetime.timedelta(days=1))
+#         year = now.year
+#         month = now.month
+#         day = now.day
+#
+#         if year == self.birth_year:
+#             return 0
+#         else:
+#             if self.birth_month > month or (self.birth_month == month and self.birth_day > day):
+#                 return year - self.birth_year - 1
+#             else:
+#                 return year - self.birth_year
+#
+#     def get_zodiac(self):
+#         """通过身份证判断生肖"""
+#         return '猴鸡狗猪鼠牛虎兔龙蛇马羊'[self.birth_year % 12]
+#
+#     def get_constellation(self):
+#         n = ('摩羯座', '水瓶座', '双鱼座', '白羊座', '金牛座', '双子座',
+#              '巨蟹座', '狮子座', '处女座', '天秤座', '天蝎座', '射手座')
+#         d = (
+#             (1, 20), (2, 19), (3, 21), (4, 21), (5, 21), (6, 22), (7, 23), (8, 23), (9, 23), (10, 23), (11, 23),
+#             (12, 23))
+#         return n[len(list(filter(lambda y: y <= (self.birth_month, self.birth_day), d))) % 12]
+#
+#     def get_6(self):
+#         """通过身份证获取前三位籍贯编码"""
+#         return self.id[:6]
 
 
 # admin后台模块
@@ -163,12 +166,12 @@ class PersonalinformationAdmin(admin.ModelAdmin):
     """自定义个人档案后台模块"""
     list_display = (
         'name', 'idnumber', 'sex', 'birthday', 'upper_case_age', 'permanenttype', 'dadui', 'zhongdui', 'bianzhi',
-        'create_time', 'update_time', 'is_delete')     # 列表显示字段
+        'create_time', 'update_time', 'is_delete')  # 列表显示字段
     list_filter = ('dadui', 'zhongdui', 'politics')  # 右侧过滤栏
-    list_per_page = 25      # 列表显示数据条数
-    date_hierarchy = 'entry'        # 顶部显示时间索引
-    list_editable = ('is_delete',)     # 列表页可编辑字段
-    search_fields = ['name', 'idnumber']    # 设置搜索字段
+    list_per_page = 25  # 列表显示数据条数
+    date_hierarchy = 'entry'  # 顶部显示时间索引
+    list_editable = ('is_delete',)  # 列表页可编辑字段
+    search_fields = ['name', 'idnumber']  # 设置搜索字段
 
     def get_list_filter(self, request):
         """根据权限判断显示右侧过滤栏"""
@@ -201,6 +204,7 @@ class PersonalinformationAdmin(admin.ModelAdmin):
         else:
             age = '无'
         return ("%s" % age).upper()
+
     upper_case_age.short_description = '年龄'
 
     # 自定义批量列表修改
@@ -214,6 +218,7 @@ class PersonalinformationAdmin(admin.ModelAdmin):
         else:
             message_bit = '你没有权限。'
             self.message_user(request, "%s" % message_bit)
+
     make_delete.short_description = "标记删除"
 
     def make_not_delete(self, request, queryset):
@@ -226,6 +231,7 @@ class PersonalinformationAdmin(admin.ModelAdmin):
         else:
             message_bit = '你没有权限。'
             self.message_user(request, "%s" % message_bit)
+
     make_not_delete.short_description = "取消标记删除"
     actions = ['make_delete', 'make_not_delete']
 

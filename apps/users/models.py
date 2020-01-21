@@ -1,9 +1,13 @@
 # from django.db import models
 
 # Create your models here.
+import datetime
+from dateutil.relativedelta import relativedelta
 
 from classification.models import *
 from django.contrib.auth.models import AbstractUser
+
+from .tools import GetInformation
 
 NATION = (('汉族', '汉族'), ('壮族', '壮族'), ('满族', '满族'), ('回族', '回族'), ('苗族', '苗族'), ('维吾尔族', '维吾尔族'), ('土家族', '土家族'),
           ('彝族', '彝族'), ('蒙古族', '蒙古族'), ('藏族', '藏族'), ('布依族', '布依族'), ('侗族', '侗族'), ('瑶族', '瑶族'), ('朝鲜族', '朝鲜族'),
@@ -114,6 +118,24 @@ class PersonalInformation(models.Model):
         verbose_name = '个人档案'
         verbose_name_plural = verbose_name
         ordering = ['-entry']
+
+    def save(self, *args, **kwargs):
+        if self.idnumber:
+            getInformation = GetInformation(self.idnumber)
+            shengri = getInformation.get_birthday()
+            jiguan = getInformation.get_6()
+            dizhi = DiZhi.objects.filter(dizhi_id=jiguan)
+            if dizhi:
+                self.jiguan = dizhi[0]
+            if self.entry:
+                self.entryzhuanzheng = self.entry - relativedelta(months=-1)
+            if self.zhuanfujing:
+                self.fujingzhuanzheng = self.zhuanfujing - relativedelta(months=-2)
+            self.sex = getInformation.get_sex()
+            self.birthday = datetime.date(*map(int, shengri.split('-')))
+            self.zodiac = getInformation.get_zodiac()
+            self.constellation = getInformation.get_constellation()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         # return self.name

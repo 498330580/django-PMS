@@ -16,10 +16,14 @@ class UserInformationSerializer(serializers.ModelSerializer):
 
 
 class PersonalInformationSerializer(serializers.ModelSerializer):
-    user = UserInformationSerializer()
+    # user = UserInformationSerializer()
 
     # images = GoodsImageSerializer(many=True)
     class Meta:
         model = PersonalInformation
-        fields = "__all__"
+        # fields = "__all__"
+        exclude = []
+        # extra_kwargs = {'user': {'required': False}}
+
+        # depth = 1
 
