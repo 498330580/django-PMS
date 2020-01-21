@@ -222,6 +222,13 @@ class HomeInformation(models.Model):
         verbose_name = '家庭成员信息'
         verbose_name_plural = verbose_name
 
+    def save(self, *args, **kwargs):
+        if not self.birthday and self.idnumber:
+            shengri = GetInformation(self.idnumber).get_birthday()
+            shengri = datetime.date(*map(int, shengri.split('-')))
+            self.birthday = shengri
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return "%s-%s" % (self.name, self.appellation)
 
