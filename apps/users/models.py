@@ -4,7 +4,7 @@
 import datetime
 from dateutil.relativedelta import relativedelta
 
-from classification.models import *
+from apps.classification.models import *
 from django.contrib.auth.models import AbstractUser
 
 from .tools import GetInformation

@@ -6,8 +6,8 @@ from .models import *
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy
 from django.contrib.auth.models import Group
-from dateutil.relativedelta import relativedelta
-from classification.models import DiZhi
+# from dateutil.relativedelta import relativedelta
+# from apps.classification.models import DiZhi
 
 import datetime
 

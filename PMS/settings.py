@@ -44,11 +44,12 @@ INSTALLED_APPS = [
     'django_filters',  # DRF
     'rest_framework.authtoken',  # DRF登录
     'corsheaders',  # 解决vue跨域问题
+    # 'drf_multiple_model',   # 解决drf无法同时渲染多个model问题  使用“django-rest-multiple-models”
     # 'viewflow',     # 工作流
     # 'snippets.apps.SnippetsConfig',
-    'apps.users.apps.UsersConfig',
-    'apps.classification.apps.ClassificationConfig',
-    'apps.vue_pms.apps.VuePmsConfig',  # 前端设置
+    'apps.users',
+    'apps.classification',
+    'apps.vue_pms',  # 前端设置
 ]
 
 MIDDLEWARE = [
