@@ -130,4 +130,8 @@ class Login(ObtainAuthToken):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
-        return Response({'token': token.key, 'status': HTTP_200_OK})
+        user_data = UserInformation.objects.get(username=user)
+        return Response({'token': token.key, 'status': HTTP_200_OK, 'ID': user_data.id,
+                         '用户名': user_data.username, '姓': user_data.last_name, '名': user_data.first_name,
+                         '用户组': user_data.user_permissions.all()
+                         })
