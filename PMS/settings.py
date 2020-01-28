@@ -199,7 +199,7 @@ CORS_ALLOW_HEADERS = (
 #             }
 
 # 静态文件目录
-STATIC_URL = '/static/'
+# STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
