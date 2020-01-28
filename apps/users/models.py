@@ -55,7 +55,8 @@ class Role(models.Model):
     users = models.ManyToManyField(UserInformation,
                                    related_name='users_role',
                                    verbose_name='用户',
-                                   help_text='用户角色，控制用户访问与数据修改权限')
+                                   help_text='用户角色，控制用户访问与数据修改权限',
+                                   null=True, blank=True)
 
     class Meta:
         verbose_name = '角色'
