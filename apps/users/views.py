@@ -3,7 +3,7 @@ from django.contrib.auth.models import Group, Permission
 # from django.shortcuts import render
 
 # Create your views here.
-from rest_framework.generics import get_object_or_404
+# from rest_framework.generics import get_object_or_404
 
 from .models import PersonalInformation, UserInformation, Role
 from classification.models import *
@@ -85,14 +85,16 @@ class PersonalInformationList(viewsets.ModelViewSet):
                     return PersonalInformation.objects.filter(is_delete=False)
                 else:
                     '''除了超级用户，其他人都要创建档案信息，包括管理员，不然无法识别管理范围'''
-                    minjing = CategoryType.objects.get(name='民警')   # 不显示管理民警内容
+                    minjing = CategoryType.objects.get(name='民警')  # 不显示管理民警内容
                     p = PersonalInformation.objects.get(user__username=username)
                     dadui = p.dadui
                     zhongdui = p.zhongdui
                     if '大队' in ranges:
-                        return PersonalInformation.objects.filter(is_delete=False, dadui=dadui).exclude(category=minjing)
+                        return PersonalInformation.objects.filter(is_delete=False, dadui=dadui).exclude(
+                            category=minjing)
                     elif '中队' in ranges:
-                        return PersonalInformation.objects.filter(is_delete=False, dadui=zhongdui).exclude(category=minjing)
+                        return PersonalInformation.objects.filter(is_delete=False, dadui=zhongdui).exclude(
+                            category=minjing)
                     elif '个人' in ranges:
                         '''其他用户查看本人信息'''
                         return PersonalInformation.objects.filter(user=username).exclude(category=minjing)
