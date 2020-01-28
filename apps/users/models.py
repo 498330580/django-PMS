@@ -83,19 +83,19 @@ class PersonalInformation(models.Model):
     nation = models.CharField(max_length=10, verbose_name='民族', default='汉族', choices=NATION)
     sex = models.CharField(max_length=5, verbose_name='性别', choices=(('男', '男'), ('女', '女')), default='男',
                            help_text='默认为“男”,系统会根据身份证自动判断')
-    birthday = models.DateField(verbose_name='出生日期', help_text='系统会根据身份证自动填写', blank=True)
+    birthday = models.DateField(verbose_name='出生日期', help_text='出生日期，系统会根据身份证自动填写', blank=True)
     zodiac = models.CharField(verbose_name='生肖', max_length=5, default='不清',
                               choices=(('不清', '不清'), ('猴', '猴'), ('鸡', '鸡'), ('狗', '狗'), ('猪', '猪'), ('鼠', '鼠'),
                                        ('牛', '牛'), ('虎', '虎'), ('兔', '兔'), ('龙', '龙'), ('蛇', '蛇'), ('马', '马'),
-                                       ('羊', '羊')), help_text='系统会根据身份证自动填写')
+                                       ('羊', '羊')), help_text='生肖，系统会根据身份证自动填写')
     constellation = models.CharField(verbose_name='星座', max_length=6, default='不清',
                                      choices=(('不清', '不清'), ('摩羯座', '摩羯座'), ('水瓶座', '水瓶座'), ('双鱼座', '双鱼座'),
                                               ('白羊座', '白羊座'), ('金牛座', '金牛座'), ('双子座', '双子座'), ('巨蟹座', '巨蟹座'),
                                               ('狮子座', '狮子座'), ('处女座', '处女座'), ('天秤座', '天秤座'), ('天蝎座', '天蝎座'),
-                                              ('射手座', '射手座')), help_text='系统会根据身份证自动填写')
+                                              ('射手座', '射手座')), help_text='星座，系统会根据身份证自动填写')
     idnumber = models.CharField(max_length=18, verbose_name="身份证", help_text="身份证号，如果最后一位为X请大写", db_index=True)
     jiguan = models.ForeignKey(DiZhi, verbose_name='籍贯', on_delete=models.SET_NULL, null=True, blank=True,
-                               help_text='系统会根据身份证自动填写')
+                               help_text='籍贯，系统会根据身份证自动填写')
     permanent = models.CharField(max_length=100, verbose_name='户籍地址', help_text='身份证上的地址')
     permanenttype = models.CharField(max_length=10, default='',
                                      choices=(("城镇", "城镇"), ("农村", "农村"),),
@@ -109,7 +109,7 @@ class PersonalInformation(models.Model):
                                 default="群众")
     politicstime = models.DateField(verbose_name='入党/团时间', null=True, blank=True)
     category = models.ForeignKey(CategoryType, verbose_name='人员类别', on_delete=models.SET_NULL, null=True, blank=True,
-                                 help_text='本信息由管理员填写')
+                                 help_text='人员类别，本信息由管理员填写')
     veteran = models.ForeignKey(DemobilizedType, verbose_name='退役类别', on_delete=models.SET_NULL, null=True,
                                 blank=True, )
     marriage = models.CharField(max_length=10,
@@ -118,11 +118,15 @@ class PersonalInformation(models.Model):
                                 verbose_name='婚姻状态')
     drivinglicense = models.ForeignKey(DrivingLicenseType, verbose_name='驾照', on_delete=models.SET_NULL, null=True,
                                        blank=True, default=1)
-    entry = models.DateField(verbose_name='入职时间', null=True, blank=True, help_text='本信息由管理员填写')
-    entryzhuanzheng = models.DateField(verbose_name='入职转正时间', null=True, blank=True, help_text='本信息由管理员填写')
-    zhuanfujing = models.DateField(verbose_name='辅警入职时间', null=True, blank=True, help_text='本信息由管理员填写')
-    fujingzhuanzheng = models.DateField(verbose_name='辅警入职转正时间', null=True, blank=True, help_text='本信息由管理员填写')
-    quit = models.DateField(verbose_name='离职/调离时间', null=True, blank=True, help_text='本信息由管理员填写')
+    """以下可以设计为在职履历信息（单独设计一个关联的ForeignKey表）"""
+    entry = models.DateField(verbose_name='入职时间', null=True, blank=True, help_text='入职时间，本信息由管理员填写')
+    entryzhuanzheng = models.DateField(verbose_name='入职转正时间', null=True, blank=True,
+                                       help_text='入职转正时间，本信息由管理员填写（辅警不填写此项）')
+    zhuanfujing = models.DateField(verbose_name='辅警入职时间', null=True, blank=True, help_text='辅警入职时间，本信息由管理员填写')
+    fujingzhuanzheng = models.DateField(verbose_name='辅警入职转正时间', null=True, blank=True,
+                                        help_text='辅警入职转正时间，本信息由管理员填写（协勤不填写此项）')
+    """以上可以设计为在职履历信息（单独设计一个关联的ForeignKey表）"""
+    quit = models.DateField(verbose_name='离职/调离时间', null=True, blank=True, help_text='离职/调离时间，本信息由管理员填写')
     dadui = models.ForeignKey(DaDuiType, verbose_name='所属大队', on_delete=models.SET_NULL, null=True, blank=True,
                               help_text='本信息由管理员填写')
     zhongdui = models.ForeignKey(ZhongDuiType, verbose_name='所属中队（小组）', on_delete=models.SET_NULL, null=True,
