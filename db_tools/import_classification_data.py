@@ -9,6 +9,7 @@ import os
 import sys
 
 import pandas as pd
+
 # import datetime
 # from dateutil.relativedelta import relativedelta
 
@@ -227,16 +228,16 @@ print('写入地址编码结束')
 
 print('写入用户组与用户角色开始')
 for role in [{'内勤': '所有'}, {'大队长': '大队'}, {'中队长': '中队'}, {'队员': '个人'}]:
-    if not Group.objects.filter(name=role) and not Role.objects.filter(name=role):
+    if not Group.objects.filter(name=list(role.keys())[0]) and not Role.objects.filter(name=list(role.keys())[0]):
         '''用户角色与用户组都未创建'''
         Role.objects.create(name=list(role.keys())[0], ranges=list(role.values())[0])
-    elif not Group.objects.filter(name=role) and Role.objects.filter(name=role):
+    elif not Group.objects.filter(name=list(role.keys())[0]) and Role.objects.filter(name=list(role.keys())[0]):
         '''角色存在，用户组不存在的情况'''
         group = Group.objects.create(name=list(role.keys())[0])
-        role = Role.objects.get(name=role)
+        role = Role.objects.get(name=list(role.keys())[0])
         role.group = group
         role.save()
-    elif Group.objects.filter(name=role) and not Role.objects.filter(name=role):
+    elif Group.objects.filter(name=list(role.keys())[0]) and not Role.objects.filter(name=list(role.keys())[0]):
         '''用户组存在，角色不存在的情况'''
         Role.objects.create(name=list(role.keys())[0], ranges=list(role.values())[0])
     else:
@@ -351,6 +352,11 @@ for index, row in data.iterrows():
                 personalinformation.save()
     else:
         user = UserInformation.objects.get(username=row['身份证号码'].upper())
+        group = Group.objects.get(name='队员')
+        user.groups.add(group)
+        user.save()
+        if not Role.objects.filter(users__username=user, name='队员'):
+            Role.objects.get(name='队员').users.add(user)
         if not PersonalInformation.objects.filter(idnumber=row['身份证号码'].upper()):
             print('写入:{}-{}'.format(row['身份证号码'].upper(), row['姓名']))
             data_obj = PersonalInformation()
