@@ -225,12 +225,23 @@ for index, row in data.iterrows():
         data_obj.save()
 print('写入地址编码结束')
 
-print('写入用户组开始')
-if not Group.objects.filter(name='普通用户'):
-    Group.objects.create(name='普通用户')
-if not Group.objects.filter(name='人事管理'):
-    Group.objects.create(name='人事管理')
-print('写入用户组结束')
+print('写入用户组与用户角色开始')
+for role in [{'内勤': '所有'}, {'大队长': '大队'}, {'中队长': '中队'}, {'队员': '个人'}]:
+    if not Group.objects.filter(name=role) and not Role.objects.filter(name=role):
+        '''用户角色与用户组都未创建'''
+        Role.objects.create(name=list(role.keys())[0], ranges=list(role.values())[0])
+    elif not Group.objects.filter(name=role) and Role.objects.filter(name=role):
+        '''角色存在，用户组不存在的情况'''
+        group = Group.objects.create(name=list(role.keys())[0])
+        role = Role.objects.get(name=role)
+        role.group = group
+        role.save()
+    elif Group.objects.filter(name=role) and not Role.objects.filter(name=role):
+        '''用户组存在，角色不存在的情况'''
+        Role.objects.create(name=list(role.keys())[0], ranges=list(role.values())[0])
+    else:
+        print('用户组(角色)： %s 已存在' % list(role.keys())[0])
+print('写入用户组与用户角色结束')
 
 print('写入数据')
 # 写入数据

@@ -5,14 +5,14 @@ from django.contrib.auth.models import Group, Permission
 # Create your views here.
 from rest_framework.generics import get_object_or_404
 
-from .models import PersonalInformation, UserInformation
+from .models import PersonalInformation, UserInformation, Role
 from .serializers import PersonalInformationSerializer, UserInformationSerializer, GroupSerializer, PermissionSerializer
 # from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from rest_framework import mixins
 from rest_framework.pagination import PageNumberPagination
-from rest_framework import viewsets, views
+from rest_framework import viewsets
 from rest_framework import filters
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
@@ -73,16 +73,19 @@ class PersonalInformationList(viewsets.ModelViewSet):
     def get_queryset(self):
         """设置列表返回数据"""
         if self.request is not None:
-            group_name = ''
-            if Group.objects.filter(user=self.request.user):
-                group_name = Group.objects.filter(user=self.request.user)
             username = self.request.user
+            p = PersonalInformation.objects.get(user__username=username)
+            ranges = [i[0] for i in Role.objects.filter(users__username=username).values_list('ranges')]
             if self.request.user.is_superuser:
                 '''允许超级管理员查看全部信息'''
                 return PersonalInformation.objects.all()
-            elif '人事管理' in [i[0] for i in group_name.values_list('name')]:
-                '''允许具有人事管理的人员查看全部未被标记删除的人员信息'''
+            elif '所有' in ranges:
+                '''允许具有所有数据访问权限的人访问未被标记删除的所有数据'''
                 return PersonalInformation.objects.filter(is_delete=False)
+            elif '大队' in ranges:
+                return PersonalInformation.objects.filter(is_delete=False, dadui=p.dadui)
+            elif '中队' in ranges:
+                return PersonalInformation.objects.filter(is_delete=False, dadui=p.zhongdui)
             else:
                 '''其他用户查看本人信息'''
                 return PersonalInformation.objects.filter(user=username)

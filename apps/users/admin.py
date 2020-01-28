@@ -259,5 +259,10 @@ class PersonalinformationAdmin(admin.ModelAdmin):
                 return fields
 
 
+class RoleAdmin(admin.ModelAdmin):
+    filter_horizontal = ['users', ]
+
+
+admin.site.register(Role, RoleAdmin)
 admin.site.register(UserInformation, UserInformationAdmin)
 admin.site.register(PersonalInformation, PersonalinformationAdmin)
