@@ -259,7 +259,8 @@ for index, row in data.iterrows():
         group = Group.objects.get(name='队员')
         user.groups.add(group)
         user.save()
-        Role.objects.get(name='队员').users.add(user)
+        if not Role.objects.filter(users__username=user, name='队员'):
+            Role.objects.get(name='队员').users.add(user)
 
         if not PersonalInformation.objects.filter(idnumber=row['身份证号码'].upper()):
             '''验证个人信息是否存在'''
