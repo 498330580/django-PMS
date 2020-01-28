@@ -2,7 +2,7 @@
 __author__ = 'bobby'
 
 import django_filters
-from django.db.models import Q
+# from django.db.models import Q
 
 from .models import PersonalInformation
 
