@@ -6,6 +6,7 @@ from django.contrib.auth.models import Group, Permission
 from rest_framework.generics import get_object_or_404
 
 from .models import PersonalInformation, UserInformation, Role
+from classification.models import *
 from .serializers import PersonalInformationSerializer, UserInformationSerializer, GroupSerializer, PermissionSerializer
 # from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -83,21 +84,18 @@ class PersonalInformationList(viewsets.ModelViewSet):
                     '''允许具有所有数据访问权限的人访问未被标记删除的所有数据'''
                     return PersonalInformation.objects.filter(is_delete=False)
                 else:
-                    ps = PersonalInformation.objects.filter(user__username=username)
-                    if ps:
-                        p = PersonalInformation.objects.get(user__username=username)
-                        dadui = p.dadui
-                        zhongdui = p.zhongdui
-                    else:
-                        dadui = p.dadui
-                        zhongdui = p.zhongdui
+                    '''除了超级用户，其他人都要创建档案信息，包括管理员，不然无法识别管理范围'''
+                    minjing = CategoryType.objects.get(name='民警')   # 不显示管理民警内容
+                    p = PersonalInformation.objects.get(user__username=username)
+                    dadui = p.dadui
+                    zhongdui = p.zhongdui
                     if '大队' in ranges:
-                        return PersonalInformation.objects.filter(is_delete=False, dadui=dadui)
+                        return PersonalInformation.objects.filter(is_delete=False, dadui=dadui).exclude(category=minjing)
                     elif '中队' in ranges:
-                        return PersonalInformation.objects.filter(is_delete=False, dadui=zhongdui)
+                        return PersonalInformation.objects.filter(is_delete=False, dadui=zhongdui).exclude(category=minjing)
                     elif '个人' in ranges:
                         '''其他用户查看本人信息'''
-                        return PersonalInformation.objects.filter(user=username)
+                        return PersonalInformation.objects.filter(user=username).exclude(category=minjing)
 
     # def retrieve(self, request, *args, **kwargs):
     #     instance = self.get_object()

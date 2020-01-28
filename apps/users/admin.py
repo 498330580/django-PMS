@@ -131,7 +131,7 @@ class PersonalinformationAdmin(admin.ModelAdmin):
             return self.list_filter
 
     def get_list_display(self, request):
-        """根据权限判断列表页显示内容"""
+        """根据权限判断列表页显示标签内容"""
         current_user_set = request.user
         if current_user_set.groups.all():
             current_group_set = Group.objects.get(user=current_user_set)
