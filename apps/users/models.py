@@ -64,11 +64,17 @@ class Role(models.Model):
 
     def save(self, *args, **kwargs):
         if self.name and not Group.objects.filter(name=self.name) and not self.group:
+            """用户组不存在，未填写用户组"""
             group = Group.objects.create(name=self.name)
             self.group = group
         elif self.name and Group.objects.filter(name=self.name) and not self.group:
+            """用户组存在，未填写用户组"""
             group = Group.objects.get(name=self.name)
             self.group = group
+        elif self.name and not Group.objects.filter(name=self.name) and self.group:
+            """用户组未存在， 已填写用户组"""
+            self.group.name = self.name
+            self.group.save()
         super().save(*args, **kwargs)
 
     def __str__(self):

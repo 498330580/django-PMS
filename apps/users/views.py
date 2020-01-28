@@ -74,21 +74,30 @@ class PersonalInformationList(viewsets.ModelViewSet):
         """设置列表返回数据"""
         if self.request is not None:
             username = self.request.user
-            p = PersonalInformation.objects.get(user__username=username)
             ranges = [i[0] for i in Role.objects.filter(users__username=username).values_list('ranges')]
             if self.request.user.is_superuser:
                 '''允许超级管理员查看全部信息'''
                 return PersonalInformation.objects.all()
-            elif '所有' in ranges:
-                '''允许具有所有数据访问权限的人访问未被标记删除的所有数据'''
-                return PersonalInformation.objects.filter(is_delete=False)
-            elif '大队' in ranges:
-                return PersonalInformation.objects.filter(is_delete=False, dadui=p.dadui)
-            elif '中队' in ranges:
-                return PersonalInformation.objects.filter(is_delete=False, dadui=p.zhongdui)
             else:
-                '''其他用户查看本人信息'''
-                return PersonalInformation.objects.filter(user=username)
+                if '所有' in ranges:
+                    '''允许具有所有数据访问权限的人访问未被标记删除的所有数据'''
+                    return PersonalInformation.objects.filter(is_delete=False)
+                else:
+                    ps = PersonalInformation.objects.filter(user__username=username)
+                    if ps:
+                        p = PersonalInformation.objects.get(user__username=username)
+                        dadui = p.dadui
+                        zhongdui = p.zhongdui
+                    else:
+                        dadui = p.dadui
+                        zhongdui = p.zhongdui
+                    if '大队' in ranges:
+                        return PersonalInformation.objects.filter(is_delete=False, dadui=dadui)
+                    elif '中队' in ranges:
+                        return PersonalInformation.objects.filter(is_delete=False, dadui=zhongdui)
+                    elif '个人' in ranges:
+                        '''其他用户查看本人信息'''
+                        return PersonalInformation.objects.filter(user=username)
 
     # def retrieve(self, request, *args, **kwargs):
     #     instance = self.get_object()
