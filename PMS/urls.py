@@ -39,8 +39,8 @@ router.register(r'PermissionList', PermissionList, basename='PermissionList')
 urlpatterns = [
     path('admin/', admin.site.urls),
     re_path(r'^api-auth/', include('rest_framework.urls')),
-    path('docs/', include_docs_urls(title="信息管理系统")),
-    path('api/', include(router.urls)),
+    re_path('docs/', include_docs_urls(title="信息管理系统")),
+    re_path('^', include(router.urls)),
     # re_path('^api/v1/PersonalInformationList$', PersonalInformation_list, name='PIL'),
     # re_path(r'^login', views.obtain_auth_token),       # drf自带token登录验证
     re_path(r'^login', Login.as_view()),       # drf自带token登录验证

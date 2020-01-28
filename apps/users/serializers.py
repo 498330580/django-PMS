@@ -19,7 +19,7 @@ class UserInformationSerializer(serializers.ModelSerializer):
 
 
 class PersonalInformationSerializer(serializers.ModelSerializer):
-    # user = UserInformationSerializer()
+    # user = UserInformationSerializer(many=False, read_only=False)
 
     # images = GoodsImageSerializer(many=True)
     class Meta:

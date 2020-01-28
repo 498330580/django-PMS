@@ -1,17 +1,19 @@
 # Create your views here.
 from rest_framework import mixins
 from rest_framework import viewsets
+from rest_framework.authentication import TokenAuthentication, SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 
 from .models import Menu
 from .serializers import MenuSerializer
 
 
-class MenuViewset(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
+class MenuViewset(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
     list:
-        商品分类列表数据
-    retrieve:
-        获取商品分类详情
+        菜单列表数据
     """
     queryset = Menu.objects.filter(category_type=1).filter(is_look=True)
     serializer_class = MenuSerializer
+    authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
+    permission_classes = (IsAuthenticated, DjangoModelPermissions)

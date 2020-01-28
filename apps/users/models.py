@@ -46,7 +46,7 @@ class UserInformation(AbstractUser):
 # 人员档案
 class PersonalInformation(models.Model):
     user = models.OneToOneField(UserInformation, verbose_name='用户', on_delete=models.CASCADE)
-    name = models.CharField(max_length=10, verbose_name='姓名', db_index=True)
+    name = models.CharField(max_length=10, verbose_name='姓名', help_text='姓名', db_index=True)
     named = models.CharField(max_length=10, verbose_name='曾用名', default='无')
     nation = models.CharField(max_length=10, verbose_name='民族', default='汉族', choices=NATION)
     sex = models.CharField(max_length=5, verbose_name='性别', choices=(('男', '男'), ('女', '女')), default='男',
@@ -61,7 +61,7 @@ class PersonalInformation(models.Model):
                                               ('白羊座', '白羊座'), ('金牛座', '金牛座'), ('双子座', '双子座'), ('巨蟹座', '巨蟹座'),
                                               ('狮子座', '狮子座'), ('处女座', '处女座'), ('天秤座', '天秤座'), ('天蝎座', '天蝎座'),
                                               ('射手座', '射手座')), help_text='系统会根据身份证自动填写')
-    idnumber = models.CharField(max_length=18, verbose_name="身份证", help_text="如果最后一位为X请大写", db_index=True)
+    idnumber = models.CharField(max_length=18, verbose_name="身份证", help_text="身份证号，如果最后一位为X请大写", db_index=True)
     jiguan = models.ForeignKey(DiZhi, verbose_name='籍贯', on_delete=models.SET_NULL, null=True, blank=True,
                                help_text='系统会根据身份证自动填写')
     permanent = models.CharField(max_length=100, verbose_name='户籍地址', help_text='身份证上的地址')

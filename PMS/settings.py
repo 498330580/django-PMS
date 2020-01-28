@@ -147,6 +147,7 @@ REST_FRAMEWORK = {
     # 'DEFAULT_PERMISSION_CLASSES': [
     #     'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     # ]
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema',    # 文档
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],  # 过滤器、分页、搜索
     'DEFAULT_AUTHENTICATION_CLASSES': [  # 登录设置
         # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',  # JWT登录验证
