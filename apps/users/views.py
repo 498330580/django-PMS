@@ -21,7 +21,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 # 重构token登录验证返回
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
-from rest_framework.status import HTTP_200_OK
+from rest_framework.status import HTTP_200_OK, HTTP_403_FORBIDDEN
 
 from .filters import PersonalInformationFilter
 
@@ -75,29 +75,25 @@ class PersonalInformationList(viewsets.ModelViewSet):
         """设置列表返回数据"""
         if self.request is not None:
             username = self.request.user
-            ranges = [i[0] for i in Role.objects.filter(users__username=username).values_list('ranges')]
             if self.request.user.is_superuser:
                 '''允许超级管理员查看全部信息'''
                 return PersonalInformation.objects.all()
             else:
-                if '所有' in ranges:
-                    '''允许具有所有数据访问权限的人访问未被标记删除的所有数据'''
-                    return PersonalInformation.objects.filter(is_delete=False)
+                role_dadui = DaDuiType.objects.filter(role__users=username)
+                role_zhongdui = ZhongDuiType.objects.filter(role__users=username)
+                if role_dadui and role_zhongdui:
+                    '''权限范围到中队或小组'''
+                    return PersonalInformation.objects.filter(is_delete=False, dadui__in=role_dadui,
+                                                              zhongdui__in=role_zhongdui)
+                elif role_dadui and not role_zhongdui:
+                    '''权限范围到大队'''
+                    return PersonalInformation.objects.filter(is_delete=False, dadui__in=role_dadui)
+                elif not role_dadui and not role_zhongdui:
+                    '''权限范围到个人，只有本账号访问权限'''
+                    return PersonalInformation.objects.filter(is_delete=False, user=username)
                 else:
-                    '''除了超级用户，其他人都要创建档案信息，包括管理员，不然无法识别管理范围'''
-                    minjing = CategoryType.objects.get(name='民警')  # 不显示管理民警内容
-                    p = PersonalInformation.objects.get(user__username=username)
-                    dadui = p.dadui
-                    zhongdui = p.zhongdui
-                    if '大队' in ranges:
-                        return PersonalInformation.objects.filter(is_delete=False, dadui=dadui).exclude(
-                            category=minjing)
-                    elif '中队' in ranges:
-                        return PersonalInformation.objects.filter(is_delete=False, dadui=zhongdui).exclude(
-                            category=minjing)
-                    elif '个人' in ranges:
-                        '''其他用户查看本人信息'''
-                        return PersonalInformation.objects.filter(user=username).exclude(category=minjing)
+                    '''只有中队权限，无大队权限返回错误信息'''
+                    return Response({'message': '无权限', 'status': HTTP_403_FORBIDDEN})
 
     # def retrieve(self, request, *args, **kwargs):
     #     instance = self.get_object()

@@ -43,20 +43,30 @@ class UserInformation(AbstractUser):
         ordering = ['id']
 
     def __str__(self):
-        return self.username
+        return '{}-{}{}'.format(self.username, self.last_name, self.first_name)
 
 
 # 角色模型
 class Role(models.Model):
     name = models.CharField(max_length=25, verbose_name='角色名称', help_text='角色名称')
-    ranges = models.CharField(max_length=10, verbose_name='控制范围', help_text='角色控制数据的范围', choices=Range, default='个人')
+    # ranges = models.CharField(max_length=10, verbose_name='控制范围', help_text='角色控制数据的范围', choices=Range, default='个人')
     group = models.OneToOneField(Group, verbose_name='用户组', help_text='与角色对应的用户组，控制角色权限', on_delete=models.CASCADE,
                                  null=True, blank=True)
     users = models.ManyToManyField(UserInformation,
                                    related_name='users_role',
                                    verbose_name='用户',
-                                   help_text='用户角色，控制用户访问与数据修改权限',
-                                   null=True, blank=True)
+                                   help_text='用户角色，控制用户访问与数据修改权限', blank=True)
+    ranges_dadui = models.ManyToManyField(DaDuiType, verbose_name='权限大队', help_text='可以访问的数据范围：大队', blank=True)
+    ranges_zhongdui = models.ManyToManyField(ZhongDuiType, verbose_name='权限中队（小组）',
+                                             help_text='可以访问的数据范围：中队（小组），要选择此项必须选择大队选项',
+                                             blank=True)
+
+    # 创建时间
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    # 最后更新时间
+    update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
+    # 是否删除
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
         verbose_name = '角色'

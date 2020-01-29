@@ -260,7 +260,7 @@ class PersonalinformationAdmin(admin.ModelAdmin):
 
 
 class RoleAdmin(admin.ModelAdmin):
-    filter_horizontal = ['users', ]
+    filter_horizontal = ['users', 'ranges_dadui', 'ranges_zhongdui']
 
 
 admin.site.register(Role, RoleAdmin)

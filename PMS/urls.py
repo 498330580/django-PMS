@@ -25,7 +25,7 @@ from rest_framework.routers import DefaultRouter
 
 from apps.users.views import PersonalInformationList, Login, UserInformationList, GroupList, PermissionList
 from apps.vue_pms.views import MenuViewset
-from apps.classification.views import Type
+from classification.views import Type
 
 router = DefaultRouter(trailing_slash=False)
 
