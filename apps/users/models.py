@@ -147,6 +147,8 @@ class PersonalInformation(models.Model):
                               help_text='所属大队，本信息由管理员填写')
     zhongdui = models.ForeignKey(ZhongDuiType, verbose_name='所属中队（小组）', on_delete=models.SET_NULL, null=True,
                                  blank=True, help_text='所属中队（小组），本信息由管理员填写')
+    fenzu = models.ForeignKey(DaduiZhongduiType, verbose_name='所属分组', on_delete=models.SET_NULL, null=True,
+                              blank=True, help_text='所属分组，本信息由管理员填写')
     jiediao = models.ForeignKey(Borrow, verbose_name='借调位置', on_delete=models.SET_NULL, null=True, blank=True,
                                 help_text='借调位置，本信息由管理员填写')
     bianzhi = models.ForeignKey(Organization, verbose_name='编制位置', on_delete=models.SET_NULL, null=True, blank=True,

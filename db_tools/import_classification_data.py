@@ -59,6 +59,35 @@ for DrivingLicense in DrivingLicenseType_data:
         drivingLicense.save()
 print('写入驾照类别结束')
 
+# 写入分组
+for DaduiZhongdui in DaduiZhongduiType_data:
+    if not DaduiZhongduiType.objects.filter(name=DaduiZhongdui['name']):
+        fenzhu = DaduiZhongduiType()
+        fenzhu.name = DaduiZhongdui['name']
+        fenzhu.desc = DaduiZhongdui['introduce']
+        fenzhu.index = DaduiZhongdui['index']
+        fenzhu.category_type = DaduiZhongdui['category_type']
+        fenzhu.save()
+        for i in DaduiZhongdui['data']:
+            fenzhu_two = DaduiZhongduiType()
+            fenzhu_two.parent_category = fenzhu
+            fenzhu_two.name = i['name']
+            fenzhu_two.desc = i['introduce']
+            fenzhu_two.index = i['index']
+            fenzhu_two.category_type = i['category_type']
+            fenzhu_two.save()
+    else:
+        fenzhu = DaduiZhongduiType.objects.get(name=DaduiZhongdui['name'])
+        for i in DaduiZhongdui['data']:
+            if not DaduiZhongduiType.objects.filter(name=i['name']):
+                fenzhu_two = DaduiZhongduiType()
+                fenzhu_two.parent_category = fenzhu
+                fenzhu_two.name = i['name']
+                fenzhu_two.desc = i['introduce']
+                fenzhu_two.index = i['index']
+                fenzhu_two.category_type = i['category_type']
+                fenzhu_two.save()
+
 # 写入大队类别
 for DaDui in DaDuiType_data:
     if not DaDuiType.objects.filter(name=DaDui['name']):
@@ -226,23 +255,23 @@ for index, row in data.iterrows():
         data_obj.save()
 print('写入地址编码结束')
 
-print('写入用户组与用户角色开始')
-for role in [{'内勤': '所有'}, {'大队长': '大队'}, {'中队长': '中队'}, {'队员': '个人'}]:
-    if not Group.objects.filter(name=list(role.keys())[0]) and not Role.objects.filter(name=list(role.keys())[0]):
-        '''用户角色与用户组都未创建'''
-        Role.objects.create(name=list(role.keys())[0], ranges=list(role.values())[0])
-    elif not Group.objects.filter(name=list(role.keys())[0]) and Role.objects.filter(name=list(role.keys())[0]):
-        '''角色存在，用户组不存在的情况'''
-        group = Group.objects.create(name=list(role.keys())[0])
-        role = Role.objects.get(name=list(role.keys())[0])
-        role.group = group
-        role.save()
-    elif Group.objects.filter(name=list(role.keys())[0]) and not Role.objects.filter(name=list(role.keys())[0]):
-        '''用户组存在，角色不存在的情况'''
-        Role.objects.create(name=list(role.keys())[0], ranges=list(role.values())[0])
-    else:
-        print('用户组(角色)： %s 已存在' % list(role.keys())[0])
-print('写入用户组与用户角色结束')
+# print('写入用户组与用户角色开始')
+# for role in [{'内勤': '所有'}, {'大队长': '大队'}, {'中队长': '中队'}, {'队员': '个人'}]:
+#     if not Group.objects.filter(name=list(role.keys())[0]) and not Role.objects.filter(name=list(role.keys())[0]):
+#         '''用户角色与用户组都未创建'''
+#         Role.objects.create(name=list(role.keys())[0], ranges=list(role.values())[0])
+#     elif not Group.objects.filter(name=list(role.keys())[0]) and Role.objects.filter(name=list(role.keys())[0]):
+#         '''角色存在，用户组不存在的情况'''
+#         group = Group.objects.create(name=list(role.keys())[0])
+#         role = Role.objects.get(name=list(role.keys())[0])
+#         role.group = group
+#         role.save()
+#     elif Group.objects.filter(name=list(role.keys())[0]) and not Role.objects.filter(name=list(role.keys())[0]):
+#         '''用户组存在，角色不存在的情况'''
+#         Role.objects.create(name=list(role.keys())[0], ranges=list(role.values())[0])
+#     else:
+#         print('用户组(角色)： %s 已存在' % list(role.keys())[0])
+# print('写入用户组与用户角色结束')
 
 print('写入数据')
 # 写入数据
@@ -303,6 +332,9 @@ for index, row in data.iterrows():
             if row['所属中队'] != '未分配':
                 """写入中队信息"""
                 data_obj.zhongdui = ZhongDuiType.objects.get(name=row['所属中队'])
+                data_obj.fenzu = DaduiZhongduiType.objects.get(name=row['所属中队'], sub_cat__name=row['所属大队'])
+            else:
+                data_obj.fenzu = DaduiZhongduiType.objects.get(name=row['所属大队'])
             data_obj.jiediao = Borrow.objects.get(name=row['是否借调'])
             data_obj.bianzhi = Organization.objects.get(name=row['编制位置'])
             data_obj.economics = Economics.objects.get(name=row['家庭经济状况'])
@@ -396,6 +428,9 @@ for index, row in data.iterrows():
             if row['所属中队'] != '未分配':
                 """写入中队信息"""
                 data_obj.zhongdui = ZhongDuiType.objects.get(name=row['所属中队'])
+                data_obj.fenzu = DaduiZhongduiType.objects.get(name=row['所属中队'], sub_cat__name=row['所属大队'])
+            else:
+                data_obj.fenzu = DaduiZhongduiType.objects.get(name=row['所属大队'])
             data_obj.jiediao = Borrow.objects.get(name=row['是否借调'])
             data_obj.bianzhi = Organization.objects.get(name=row['编制位置'])
             data_obj.economics = Economics.objects.get(name=row['家庭经济状况'])
@@ -442,5 +477,17 @@ for index, row in data.iterrows():
             if not PersonalInformation.objects.filter(user=user):
                 personalinformation = PersonalInformation.objects.get(idnumber=row['身份证号码'].upper())
                 personalinformation.user = user
+                personalinformation.save()
+            else:
+                """补充信息"""
+                personalinformation = PersonalInformation.objects.get(idnumber=row['身份证号码'].upper())
+                if row['所属中队'] != '未分配':
+                    print(row['所属中队'], row['所属大队'])
+                    d = DaduiZhongduiType.objects.get(name=row['所属大队'])
+                    personalinformation.fenzu = DaduiZhongduiType.objects.get(name=row['所属中队'],
+                                                                              parent_category=d.id
+                                                                              )
+                else:
+                    personalinformation.fenzu = DaduiZhongduiType.objects.get(name=row['所属大队'])
                 personalinformation.save()
 print("写入数据结束")

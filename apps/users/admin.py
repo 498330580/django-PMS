@@ -192,7 +192,7 @@ class PersonalinformationAdmin(admin.ModelAdmin):
                                            ('zhuanfujing', 'fujingzhuanzheng'),
                                            'quit',
                                            ('category', 'gangweitype', 'gangweiname'),
-                                           ('dadui', 'zhongdui'),
+                                           ('dadui', 'zhongdui', 'fenzu'),
                                            ('jiediao', 'bianzhi'),
                                            'veteran')}),
         (gettext_lazy('家庭经济'), {'fields': (('economics', 'sources'),)}),
