@@ -32,42 +32,43 @@ DrivingLicenseType_data = [{'name': '未获得', 'introduce': '未获得', 'inde
                            ]
 
 # 分组类别
-DaduiZhongduiType_data = [{'name': '一大队', 'introduce': '一大队', 'index': 1, 'category_type': '大队',
+DaduiZhongduiType_data = [{'name': '一大队', 'introduce': '一大队', 'index': 110, 'category_type': '大队',
                            'data': [
-                               {'name': '一中队', 'introduce': '一中队', 'index': 1, 'category_type': '中队'},
-                               {'name': '二中队', 'introduce': '二中队', 'index': 2, 'category_type': '中队'},
-                               {'name': '三中队', 'introduce': '三中队', 'index': 3, 'category_type': '中队'},
-                               {'name': '四中队', 'introduce': '四中队', 'index': 4, 'category_type': '中队'}
+                               {'name': '一中队', 'introduce': '一中队', 'index': 111, 'category_type': '中队'},
+                               {'name': '二中队', 'introduce': '二中队', 'index': 112, 'category_type': '中队'},
+                               {'name': '三中队', 'introduce': '三中队', 'index': 113, 'category_type': '中队'},
+                               {'name': '四中队', 'introduce': '四中队', 'index': 114, 'category_type': '中队'}
                            ]},
-                          {'name': '二大队', 'introduce': '二大队', 'index': 2, 'category_type': '大队',
+                          {'name': '二大队', 'introduce': '二大队', 'index': 120, 'category_type': '大队',
                            'data': [
-                               {'name': '五中队', 'introduce': '五中队', 'index': 5, 'category_type': '中队'},
-                               {'name': '六中队', 'introduce': '六中队', 'index': 6, 'category_type': '中队'},
-                               {'name': '七中队', 'introduce': '七中队', 'index': 7, 'category_type': '中队'},
-                               {'name': '八中队', 'introduce': '八中队', 'index': 8, 'category_type': '中队'}
+                               {'name': '五中队', 'introduce': '五中队', 'index': 121, 'category_type': '中队'},
+                               {'name': '六中队', 'introduce': '六中队', 'index': 122, 'category_type': '中队'},
+                               {'name': '七中队', 'introduce': '七中队', 'index': 123, 'category_type': '中队'},
+                               {'name': '八中队', 'introduce': '八中队', 'index': 124, 'category_type': '中队'}
                            ]},
-                          {'name': '三大队', 'introduce': '三大队', 'index': 3, 'category_type': '大队',
+                          {'name': '三大队', 'introduce': '三大队', 'index': 130, 'category_type': '大队',
                            'data': [
-                               {'name': '九中队', 'introduce': '九中队', 'index': 9, 'category_type': '中队'},
-                               {'name': '十中队', 'introduce': '十中队', 'index': 10, 'category_type': '中队'},
-                               {'name': '十一中队', 'introduce': '十一中队', 'index': 11, 'category_type': '中队'},
-                               {'name': '十二中队', 'introduce': '十二中队', 'index': 12, 'category_type': '中队'}
+                               {'name': '九中队', 'introduce': '九中队', 'index': 131, 'category_type': '中队'},
+                               {'name': '十中队', 'introduce': '十中队', 'index': 132, 'category_type': '中队'},
+                               {'name': '十一中队', 'introduce': '十一中队', 'index': 133, 'category_type': '中队'},
+                               {'name': '十二中队', 'introduce': '十二中队', 'index': 134, 'category_type': '中队'}
                            ]},
-                          {'name': '四大队', 'introduce': '四大队', 'index': 4, 'category_type': '大队',
+                          {'name': '四大队', 'introduce': '四大队', 'index': 140, 'category_type': '大队',
                            'data': [
-                               {'name': '一中队', 'introduce': '一中队', 'index': 1, 'category_type': '中队'},
-                               {'name': '二中队', 'introduce': '二中队', 'index': 2, 'category_type': '中队'},
-                               {'name': '三中队', 'introduce': '三中队', 'index': 3, 'category_type': '中队'},
-                               {'name': '四中队', 'introduce': '四中队', 'index': 4, 'category_type': '中队'},
-                               {'name': '五中队', 'introduce': '五中队', 'index': 5, 'category_type': '中队'}
+                               {'name': '一中队', 'introduce': '一中队', 'index': 141, 'category_type': '中队'},
+                               {'name': '二中队', 'introduce': '二中队', 'index': 142, 'category_type': '中队'},
+                               {'name': '三中队', 'introduce': '三中队', 'index': 143, 'category_type': '中队'},
+                               {'name': '四中队', 'introduce': '四中队', 'index': 144, 'category_type': '中队'},
+                               {'name': '五中队', 'introduce': '五中队', 'index': 145, 'category_type': '中队'}
                            ]},
-                          {'name': '警保大队', 'introduce': '警保大队', 'index': 5, 'category_type': '大队',
+                          {'name': '警保大队', 'introduce': '警保大队', 'index': 100, 'category_type': '大队',
                            'data': [
-                               {'name': '应急指挥', 'introduce': '应急指挥', 'index': 13, 'category_type': '小组'},
-                               {'name': '应急保障（1）', 'introduce': '应急保障（1）', 'index': 14, 'category_type': '小组'},
-                               {'name': '应急保障（2）', 'introduce': '应急保障（2）', 'index': 15, 'category_type': '小组'},
-                               {'name': '应急保障（3）', 'introduce': '应急保障（3）', 'index': 16, 'category_type': '小组'},
-                               {'name': '门岗', 'introduce': '门岗', 'index': 17, 'category_type': '小组'}
+                               {'name': '应急指挥', 'introduce': '应急指挥', 'index': 101, 'category_type': '小组'},
+                               {'name': '应急保障（1）', 'introduce': '应急保障（1）', 'index': 102, 'category_type': '小组'},
+                               {'name': '应急保障（2）', 'introduce': '应急保障（2）', 'index': 103, 'category_type': '小组'},
+                               {'name': '应急保障（3）', 'introduce': '应急保障（3）', 'index': 104, 'category_type': '小组'},
+                               {'name': '门岗', 'introduce': '门岗', 'index': 105, 'category_type': '小组'},
+                               {'name': '车班', 'introduce': '车班', 'index': 106, 'category_type': '小组'}
                            ]},
                           ]
 

@@ -79,21 +79,30 @@ class PersonalInformationList(viewsets.ModelViewSet):
                 '''允许超级管理员查看全部信息'''
                 return PersonalInformation.objects.all()
             else:
-                role_dadui = DaDuiType.objects.filter(role__users=username)
-                role_zhongdui = ZhongDuiType.objects.filter(role__users=username)
-                if role_dadui and role_zhongdui:
-                    '''权限范围到中队或小组'''
-                    return PersonalInformation.objects.filter(is_delete=False, dadui__in=role_dadui,
-                                                              zhongdui__in=role_zhongdui)
-                elif role_dadui and not role_zhongdui:
-                    '''权限范围到大队'''
-                    return PersonalInformation.objects.filter(is_delete=False, dadui__in=role_dadui)
-                elif not role_dadui and not role_zhongdui:
+                role_fenzu = DaduiZhongduiType.objects.filter(role__users=username)
+                # role_dadui = DaDuiType.objects.filter(role__users=username)
+                # role_zhongdui = ZhongDuiType.objects.filter(role__users=username)
+
+                if role_fenzu:
+                    '''大队、中队、小组权限显示'''
+                    return PersonalInformation.objects.filter(is_delete=False, fenzu__in=role_fenzu)
+                else:
                     '''权限范围到个人，只有本账号访问权限'''
                     return PersonalInformation.objects.filter(is_delete=False, user=username)
-                else:
-                    '''只有中队权限，无大队权限返回错误信息'''
-                    return Response({'message': '无权限', 'status': HTTP_403_FORBIDDEN})
+
+                # if role_dadui and role_zhongdui:
+                #     '''权限范围到中队或小组'''
+                #     return PersonalInformation.objects.filter(is_delete=False, dadui__in=role_dadui,
+                #                                               zhongdui__in=role_zhongdui)
+                # elif role_dadui and not role_zhongdui:
+                #     '''权限范围到大队'''
+                #     return PersonalInformation.objects.filter(is_delete=False, dadui__in=role_dadui)
+                # elif not role_dadui and not role_zhongdui:
+                #     '''权限范围到个人，只有本账号访问权限'''
+                #     return PersonalInformation.objects.filter(is_delete=False, user=username)
+                # else:
+                #     '''只有中队权限，无大队权限返回错误信息'''
+                #     return Response({'message': '无权限', 'status': HTTP_403_FORBIDDEN})
 
     # def retrieve(self, request, *args, **kwargs):
     #     instance = self.get_object()

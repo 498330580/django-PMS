@@ -139,7 +139,10 @@ class DaduiZhongduiType(models.Model):
         ordering = ['index']
 
     def __str__(self):
-        return self.name
+        if self.parent_category:
+            return '%s-%s' % (self.parent_category, self.name)
+        else:
+            return self.name
 
 
 # 编制位置

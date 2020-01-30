@@ -24,8 +24,6 @@ NATION = (('汉族', '汉族'), ('壮族', '壮族'), ('满族', '满族'), ('�
           ('乌孜别克族', '乌孜别克族'), ('门巴族', '门巴族'), ('鄂伦春族', '鄂伦春族'), ('独龙族', '独龙族'), ('塔塔尔族', '塔塔尔族'), ('赫哲族', '赫哲族'),
           ('珞巴族', '珞巴族'))
 
-Range = (('个人', '个人'), ('中队', '中队'), ('大队', '大队'), ('所有', '所有'))
-
 
 # 用户模型.
 class UserInformation(AbstractUser):
@@ -43,13 +41,16 @@ class UserInformation(AbstractUser):
         ordering = ['id']
 
     def __str__(self):
-        return '{}-{}{}'.format(self.username, self.last_name, self.first_name)
+        if self.last_name:
+            return '{}-{}{}'.format(self.username, self.last_name, self.first_name)
+        else:
+            return self.username
 
 
 # 角色模型
 class Role(models.Model):
     name = models.CharField(max_length=25, verbose_name='角色名称', help_text='角色名称')
-    # ranges = models.CharField(max_length=10, verbose_name='控制范围', help_text='角色控制数据的范围', choices=Range, default='个人')
+    ranges_fenzu = models.ManyToManyField(DaduiZhongduiType, verbose_name='权限范围', help_text='角色控制数据的权限范围', blank=True)
     group = models.OneToOneField(Group, verbose_name='用户组', help_text='与角色对应的用户组，控制角色权限', on_delete=models.CASCADE,
                                  null=True, blank=True)
     users = models.ManyToManyField(UserInformation,

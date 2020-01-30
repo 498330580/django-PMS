@@ -14,7 +14,7 @@ class YearAdmin(admin.ModelAdmin):
 
 
 admin.site.register(CategoryType, Classification)
-admin.site.register(DaduiZhongduiType, Classification)
+admin.site.register(DaduiZhongduiType)
 admin.site.register(DemobilizedType, Classification)
 admin.site.register(DrivingLicenseType, Classification)
 admin.site.register(DaDuiType, Classification)
