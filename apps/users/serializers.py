@@ -18,6 +18,13 @@ class UserInformationSerializer(serializers.ModelSerializer):
         exclude = ['password', ]
 
 
+class UserInformationNoneSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserInformation
+        fields = ['id', 'username']
+        # exclude = ['password', ]
+
+
 class PersonalInformationSerializer(serializers.ModelSerializer):
     # user = UserInformationSerializer(many=False, read_only=False)
 

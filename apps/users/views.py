@@ -7,7 +7,7 @@ from django.contrib.auth.models import Group, Permission
 
 from .models import PersonalInformation, UserInformation, Role
 from classification.models import *
-from .serializers import PersonalInformationSerializer, UserInformationSerializer, GroupSerializer, PermissionSerializer
+from .serializers import *
 # from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -148,6 +148,16 @@ class UserInformationList(viewsets.ModelViewSet):
                 else:
                     '''权限范围到个人，只有本账号访问权限'''
                     return UserInformation.objects.filter(is_active=True, user=username)
+
+
+class UserInformationNoneList(viewsets.GenericViewSet, mixins.ListModelMixin):
+    """
+    list:未分配用户账号
+    """
+    queryset = UserInformation.objects.filter(is_superuser=False, personalinformation=None, is_active=True)
+    serializer_class = UserInformationNoneSerializer
+    authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
+    permission_classes = (IsAuthenticated, DjangoModelPermissions)
 
 
 class GroupList(mixins.ListModelMixin, viewsets.GenericViewSet):
