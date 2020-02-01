@@ -11,7 +11,7 @@ from .serializers import PersonalInformationSerializer, UserInformationSerialize
 # from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from rest_framework import mixins
+from rest_framework import mixins, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework import viewsets
 from rest_framework import filters
@@ -41,7 +41,7 @@ class PersonalInformationList(viewsets.ModelViewSet):
     list:个人信息列表页.
     retrieve:个人信息详情.
     destroy:删除个人信息.
-    create:创建个人信息
+    create:创建个人信息,user字段如果需要自己创建请填写1（int类型的）
     update:更新个人信息提供所有信息
     partial_update:增量更新个人信息
     """
@@ -66,7 +66,7 @@ class PersonalInformationList(viewsets.ModelViewSet):
     filter_class = PersonalInformationFilter
 
     # drf模糊查询
-    search_fields = ['name', 'named']
+    search_fields = ['name', 'named', 'idnumber']
 
     # drf排序设置
     ordering_fields = ['category']
@@ -77,11 +77,9 @@ class PersonalInformationList(viewsets.ModelViewSet):
             username = self.request.user
             if self.request.user.is_superuser:
                 '''允许超级管理员查看全部信息'''
-                return PersonalInformation.objects.all()
+                return PersonalInformation.objects.filter(is_delete=False)
             else:
                 role_fenzu = DaduiZhongduiType.objects.filter(role__users=username)
-                # role_dadui = DaDuiType.objects.filter(role__users=username)
-                # role_zhongdui = ZhongDuiType.objects.filter(role__users=username)
 
                 if role_fenzu:
                     '''大队、中队、小组权限显示'''
@@ -90,64 +88,66 @@ class PersonalInformationList(viewsets.ModelViewSet):
                     '''权限范围到个人，只有本账号访问权限'''
                     return PersonalInformation.objects.filter(is_delete=False, user=username)
 
-                # if role_dadui and role_zhongdui:
-                #     '''权限范围到中队或小组'''
-                #     return PersonalInformation.objects.filter(is_delete=False, dadui__in=role_dadui,
-                #                                               zhongdui__in=role_zhongdui)
-                # elif role_dadui and not role_zhongdui:
-                #     '''权限范围到大队'''
-                #     return PersonalInformation.objects.filter(is_delete=False, dadui__in=role_dadui)
-                # elif not role_dadui and not role_zhongdui:
-                #     '''权限范围到个人，只有本账号访问权限'''
-                #     return PersonalInformation.objects.filter(is_delete=False, user=username)
-                # else:
-                #     '''只有中队权限，无大队权限返回错误信息'''
-                #     return Response({'message': '无权限', 'status': HTTP_403_FORBIDDEN})
-
-    # def retrieve(self, request, *args, **kwargs):
-    #     instance = self.get_object()
-    #     print(instance)
-    #     serializer = self.get_serializer(instance)
-    #     return Response(serializer.data)
-
-    # def get_object(self):
-    #     queryset = self.filter_queryset(self.get_queryset())
-    #
-    #     # Perform the lookup filtering.
-    #     lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
-    #
-    #     assert lookup_url_kwarg in self.kwargs, (
-    #         'Expected view %s to be called with a URL keyword argument '
-    #         'named "%s". Fix your URL conf, or set the `.lookup_field` '
-    #         'attribute on the view correctly.' %
-    #         (self.__class__.__name__, lookup_url_kwarg)
-    #     )
-    #
-    #     filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
-    #     print(filter_kwargs)
-    #     obj = get_object_or_404(queryset, **filter_kwargs)
-    #     print(obj)
-    #
-    #     # May raise a permission denied
-    #     self.check_object_permissions(self.request, obj)
-    #
-    #     return obj
-
-    # def put(self, request, pk, *args, **kwargs):
-    #     return self.update(request, *args, **kwargs)
-    #
-    # def delete(self, request, *args, **kwargs):
-    #     return self.destroy(request, *args, **kwargs)
+    def create(self, request, *args, **kwargs):
+        """重写创建数据方法，在创建数据时判断是否有本人身份证创建的账号，如无则创建一个账号，并关联"""
+        idnumber = request.data['idnumber']
+        if request.data['user'] == 1:
+            if not UserInformation.objects.filter(username=idnumber):
+                user = UserInformation.objects.create_user(username=idnumber, password='Tjzd68316070.')
+                user.last_name = request.data['name'][0]
+                user.first_name = request.data['name'][1:]
+                user.save()
+                request.data['user'] = user.id
+                serializer = self.get_serializer(data=request.data)
+                serializer.is_valid(raise_exception=True)
+                self.perform_create(serializer)
+                headers = self.get_success_headers(serializer.data)
+                return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+            else:
+                if UserInformation.objects.filter(personalinformation=None, username=idnumber):
+                    user = UserInformation.objects.get(username=idnumber)
+                    request.data['user'] = user.id
+                    serializer = self.get_serializer(data=request.data)
+                    serializer.is_valid(raise_exception=True)
+                    self.perform_create(serializer)
+                    headers = self.get_success_headers(serializer.data)
+                    return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+                return Response(
+                    {'status': 500, 'message': '%s用户数据已存在' % idnumber},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+        else:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-class UserInformationList(mixins.DestroyModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin,
-                          mixins.CreateModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
+class UserInformationList(viewsets.ModelViewSet):
     """list：个人信息"""
     queryset = UserInformation.objects.filter(is_superuser=False)
     serializer_class = UserInformationSerializer
     pagination_class = PersonalInformationPagination
     authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
     permission_classes = (IsAuthenticated, DjangoModelPermissions)
+
+    def get_queryset(self):
+        """设置列表返回数据"""
+        if self.request is not None:
+            username = self.request.user
+            if self.request.user.is_superuser:
+                '''允许超级管理员查看全部信息'''
+                return UserInformation.objects.filter(is_active=True)
+            else:
+                role_fenzu = DaduiZhongduiType.objects.filter(role__users=username)
+
+                if role_fenzu:
+                    '''大队、中队、小组权限显示'''
+                    return UserInformation.objects.filter(is_active=True, fenzu__in=role_fenzu)
+                else:
+                    '''权限范围到个人，只有本账号访问权限'''
+                    return UserInformation.objects.filter(is_active=True, user=username)
 
 
 class GroupList(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -180,5 +180,5 @@ class Login(ObtainAuthToken):
         user_data = UserInformation.objects.get(username=user)
         return Response({'token': token.key, 'status': HTTP_200_OK, 'ID': user_data.id,
                          '用户名': user_data.username, '姓': user_data.last_name, '名': user_data.first_name,
-                         '用户组': user_data.user_permissions.all()
+                         '用户组': user_data.user_permissions.all(), 'superuser': user_data.is_superuser
                          })

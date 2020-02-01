@@ -118,6 +118,7 @@ class DaduiZhongduiType(models.Model):
     大队、中队、小组设置
     """
     CATEGORY_TYPE = (
+        ("人员", "人员"),
         ("大队", "大队"),
         ("中队", "中队"),
         ("小组", "小组"),

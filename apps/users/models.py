@@ -94,7 +94,8 @@ class Role(models.Model):
 
 # 人员档案
 class PersonalInformation(models.Model):
-    user = models.OneToOneField(UserInformation, verbose_name='用户', on_delete=models.CASCADE)
+    user = models.OneToOneField(UserInformation, verbose_name='用户', on_delete=models.CASCADE,
+                                help_text='关联的账号，一对一关联，必须唯一')
     name = models.CharField(max_length=10, verbose_name='姓名', help_text='姓名', db_index=True)
     named = models.CharField(max_length=10, verbose_name='曾用名', default='无', help_text='曾用名')
     nation = models.CharField(max_length=10, verbose_name='民族', default='汉族', choices=NATION, help_text='民族')
@@ -110,7 +111,8 @@ class PersonalInformation(models.Model):
                                               ('白羊座', '白羊座'), ('金牛座', '金牛座'), ('双子座', '双子座'), ('巨蟹座', '巨蟹座'),
                                               ('狮子座', '狮子座'), ('处女座', '处女座'), ('天秤座', '天秤座'), ('天蝎座', '天蝎座'),
                                               ('射手座', '射手座')), help_text='星座，系统会根据身份证自动填写')
-    idnumber = models.CharField(max_length=18, verbose_name="身份证", help_text="身份证号，如果最后一位为X请大写", db_index=True)
+    idnumber = models.CharField(max_length=18, verbose_name="身份证", help_text="身份证号，如果最后一位为X请大写，字段在数据库中必须唯一",
+                                db_index=True, unique=True)
     jiguan = models.ForeignKey(DiZhi, verbose_name='籍贯', on_delete=models.SET_NULL, null=True, blank=True,
                                help_text='籍贯，系统会根据身份证自动填写')
     permanent = models.CharField(max_length=100, verbose_name='户籍地址', help_text='身份证上的地址')
@@ -118,7 +120,7 @@ class PersonalInformation(models.Model):
                                      choices=(("城镇", "城镇"), ("农村", "农村"),),
                                      verbose_name="户籍类别", help_text='户籍类别')
     home = models.CharField(max_length=100, verbose_name='现居地址', help_text='现在居住的地址，能联系到的，可以和户籍地址相同')
-    mobile = models.CharField(max_length=11, unique=True, verbose_name='手机号码', help_text='手机号码')
+    mobile = models.CharField(max_length=11, unique=True, verbose_name='手机号码', help_text='手机号码，字段在数据库中必须唯一"')
     hobby = models.CharField(max_length=100, verbose_name='爱好/特长', default='无', help_text='爱好/特长')
     politics = models.CharField(max_length=10,
                                 choices=(("群众", "群众"), ("共青团员", "共青团员"), ("中共党员", "中共党员"),),
