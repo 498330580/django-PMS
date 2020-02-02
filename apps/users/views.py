@@ -113,8 +113,8 @@ class PersonalInformationList(viewsets.ModelViewSet):
                     headers = self.get_success_headers(serializer.data)
                     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
                 return Response(
-                    {'status': 500, 'message': '%s用户数据已存在' % idnumber},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                    {'status': 406, 'message': '%s用户数据已存在' % idnumber},
+                    status=status.HTTP_406_NOT_ACCEPTABLE
                 )
         else:
             serializer = self.get_serializer(data=request.data)
