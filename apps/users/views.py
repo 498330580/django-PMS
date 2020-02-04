@@ -144,7 +144,7 @@ class UserInformationList(viewsets.ModelViewSet):
 
                 if role_fenzu:
                     '''大队、中队、小组权限显示'''
-                    return UserInformation.objects.filter(is_active=True, fenzu__in=role_fenzu)
+                    return UserInformation.objects.filter(is_active=True, personalinformation__fenzu__in=role_fenzu)
                 else:
                     '''权限范围到个人，只有本账号访问权限'''
                     return UserInformation.objects.filter(is_active=True, user=username)
@@ -187,8 +187,9 @@ class Login(ObtainAuthToken):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
-        user_data = UserInformation.objects.get(username=user)
-        return Response({'token': token.key, 'status': HTTP_200_OK, 'ID': user_data.id,
-                         '用户名': user_data.username, '姓': user_data.last_name, '名': user_data.first_name,
-                         '用户组': user_data.user_permissions.all(), 'superuser': user_data.is_superuser
+        # user_data = UserInformation.objects.get(username=user.username)
+        return Response({'token': token.key, 'status': HTTP_200_OK, 'ID': user.id, 'staff': user.is_staff,
+                         '用户名': user.username, '姓': user.last_name, '名': user.first_name,
+                         # '用户组': user.user_permissions.all(),
+                         'superuser': user.is_superuser
                          })
