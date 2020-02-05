@@ -83,6 +83,7 @@ class PersonalInformationList(viewsets.ModelViewSet):
 
                 if role_fenzu:
                     '''大队、中队、小组权限显示'''
+                    PersonalInformation.objects.filter()
                     return PersonalInformation.objects.filter(is_delete=False, fenzu__in=role_fenzu)
                 else:
                     '''权限范围到个人，只有本账号访问权限'''

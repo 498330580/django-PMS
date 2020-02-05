@@ -69,48 +69,48 @@ class DrivingLicenseType(models.Model):
         return self.name
 
 
-# 大队类别
-class DaDuiType(models.Model):
-    name = models.CharField(verbose_name='大队类别名称', max_length=10, db_index=True)
-    introduce = models.TextField(verbose_name='类别介绍')
-    index = models.IntegerField(default=999, verbose_name='分类排序(从小到大)')
-
-    # 创建时间
-    create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
-    # 最后更新时间
-    update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
-    # 是否删除
-    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
-
-    class Meta:
-        verbose_name = '大队类别信息'
-        verbose_name_plural = verbose_name
-        ordering = ['index', 'id']
-
-    def __str__(self):
-        return self.name
-
-
-# 中队（小组）类别
-class ZhongDuiType(models.Model):
-    name = models.CharField(verbose_name='中队（小组）类别名称', max_length=10, db_index=True)
-    introduce = models.TextField(verbose_name='类别介绍')
-    index = models.IntegerField(default=999, verbose_name='分类排序(从小到大)')
-
-    # 创建时间
-    create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
-    # 最后更新时间
-    update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
-    # 是否删除
-    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
-
-    class Meta:
-        verbose_name = '中队（小组）类别信息'
-        verbose_name_plural = verbose_name
-        ordering = ['index', 'id']
-
-    def __str__(self):
-        return self.name
+# # 大队类别
+# class DaDuiType(models.Model):
+#     name = models.CharField(verbose_name='大队类别名称', max_length=10, db_index=True)
+#     introduce = models.TextField(verbose_name='类别介绍')
+#     index = models.IntegerField(default=999, verbose_name='分类排序(从小到大)')
+#
+#     # 创建时间
+#     create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+#     # 最后更新时间
+#     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
+#     # 是否删除
+#     is_delete = models.BooleanField(default=False, verbose_name='是否删除')
+#
+#     class Meta:
+#         verbose_name = '大队类别信息'
+#         verbose_name_plural = verbose_name
+#         ordering = ['index', 'id']
+#
+#     def __str__(self):
+#         return self.name
+#
+#
+# # 中队（小组）类别
+# class ZhongDuiType(models.Model):
+#     name = models.CharField(verbose_name='中队（小组）类别名称', max_length=10, db_index=True)
+#     introduce = models.TextField(verbose_name='类别介绍')
+#     index = models.IntegerField(default=999, verbose_name='分类排序(从小到大)')
+#
+#     # 创建时间
+#     create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+#     # 最后更新时间
+#     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
+#     # 是否删除
+#     is_delete = models.BooleanField(default=False, verbose_name='是否删除')
+#
+#     class Meta:
+#         verbose_name = '中队（小组）类别信息'
+#         verbose_name_plural = verbose_name
+#         ordering = ['index', 'id']
+#
+#     def __str__(self):
+#         return self.name
 
 
 class DaduiZhongduiType(models.Model):

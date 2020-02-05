@@ -57,10 +57,10 @@ class Role(models.Model):
                                    related_name='users_role',
                                    verbose_name='用户',
                                    help_text='用户角色，控制用户访问与数据修改权限', blank=True)
-    ranges_dadui = models.ManyToManyField(DaDuiType, verbose_name='权限大队', help_text='可以访问的数据范围：大队', blank=True)
-    ranges_zhongdui = models.ManyToManyField(ZhongDuiType, verbose_name='权限中队（小组）',
-                                             help_text='可以访问的数据范围：中队（小组），要选择此项必须选择大队选项',
-                                             blank=True)
+    # ranges_dadui = models.ManyToManyField(DaDuiType, verbose_name='权限大队', help_text='可以访问的数据范围：大队', blank=True)
+    # ranges_zhongdui = models.ManyToManyField(ZhongDuiType, verbose_name='权限中队（小组）',
+    #                                          help_text='可以访问的数据范围：中队（小组），要选择此项必须选择大队选项',
+    #                                          blank=True)
 
     # 创建时间
     create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
@@ -138,18 +138,22 @@ class PersonalInformation(models.Model):
     drivinglicense = models.ForeignKey(DrivingLicenseType, verbose_name='驾照', on_delete=models.SET_NULL, null=True,
                                        blank=True, default=1, help_text='驾照')
     """以下可以设计为在职履历信息（单独设计一个关联的ForeignKey表）"""
-    entry = models.DateField(verbose_name='入职时间', null=True, blank=True, help_text='入职时间，本信息由管理员填写')
-    entryzhuanzheng = models.DateField(verbose_name='入职转正时间', null=True, blank=True,
-                                       help_text='入职转正时间，本信息由管理员填写（辅警不填写此项）')
-    zhuanfujing = models.DateField(verbose_name='辅警入职时间', null=True, blank=True, help_text='辅警入职时间，本信息由管理员填写')
-    fujingzhuanzheng = models.DateField(verbose_name='辅警入职转正时间', null=True, blank=True,
-                                        help_text='辅警入职转正时间，本信息由管理员填写（协勤不填写此项）')
+    # entry = models.DateField(verbose_name='入职时间', null=True, blank=True, help_text='入职时间，本信息由管理员填写')
+    # entryzhuanzheng = models.DateField(verbose_name='入职转正时间', null=True, blank=True,
+    #                                    help_text='入职转正时间，本信息由管理员填写（辅警不填写此项）')
+    # zhuanfujing = models.DateField(verbose_name='辅警入职时间', null=True, blank=True, help_text='辅警入职时间，本信息由管理员填写')
+    # fujingzhuanzheng = models.DateField(verbose_name='辅警入职转正时间', null=True, blank=True,
+    #                                     help_text='辅警入职转正时间，本信息由管理员填写（协勤不填写此项）')
     """以上可以设计为在职履历信息（单独设计一个关联的ForeignKey表）"""
     quit = models.DateField(verbose_name='离职/调离时间', null=True, blank=True, help_text='离职/调离时间，本信息由管理员填写')
-    dadui = models.ForeignKey(DaDuiType, verbose_name='所属大队', on_delete=models.SET_NULL, null=True, blank=True,
+    """以下信息准备改写（已改写）"""
+    # dadui = models.ForeignKey(DaDuiType, verbose_name='所属大队', on_delete=models.SET_NULL, null=True, blank=True,
+    #                           help_text='所属大队，本信息由管理员填写')
+    dadui = models.ForeignKey(DaduiZhongduiType, verbose_name='所属大队', on_delete=models.SET_NULL, null=True, blank=True,
                               help_text='所属大队，本信息由管理员填写')
-    zhongdui = models.ForeignKey(ZhongDuiType, verbose_name='所属中队（小组）', on_delete=models.SET_NULL, null=True,
-                                 blank=True, help_text='所属中队（小组），本信息由管理员填写')
+    # zhongdui = models.ForeignKey(ZhongDuiType, verbose_name='所属中队（小组）', on_delete=models.SET_NULL, null=True,
+    #                              blank=True, help_text='所属中队（小组），本信息由管理员填写')
+    """以上信息准备改写"""
     fenzu = models.ForeignKey(DaduiZhongduiType, verbose_name='所属分组', on_delete=models.SET_NULL, null=True,
                               blank=True, help_text='所属分组，本信息由管理员填写')
     jiediao = models.ForeignKey(Borrow, verbose_name='借调位置', on_delete=models.SET_NULL, null=True, blank=True,
@@ -187,10 +191,10 @@ class PersonalInformation(models.Model):
             dizhi = DiZhi.objects.filter(dizhi_id=jiguan)
             if dizhi:
                 self.jiguan = dizhi[0]
-            if self.entry:
-                self.entryzhuanzheng = self.entry - relativedelta(months=-1)
-            if self.zhuanfujing:
-                self.fujingzhuanzheng = self.zhuanfujing - relativedelta(months=-2)
+            # if self.entry:
+            #     self.entryzhuanzheng = self.entry - relativedelta(months=-1)
+            # if self.zhuanfujing:
+            #     self.fujingzhuanzheng = self.zhuanfujing - relativedelta(months=-2)
             self.sex = getInformation.get_sex()
             self.birthday = datetime.date(*map(int, shengri.split('-')))
             self.zodiac = getInformation.get_zodiac()
@@ -198,7 +202,25 @@ class PersonalInformation(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return "%s-%s-%s" % (self.name, self.dadui, self.idnumber)
+        return "%s-%s-%s" % (self.name, self.fenzu, self.idnumber)
+
+
+# 履历信息
+class Lvli(models.Model):
+    name = models.ForeignKey(PersonalInformation, verbose_name='姓名', help_text='姓名', on_delete=models.CASCADE)
+    start = models.DateField(verbose_name='开始时间', help_text='开始时间')
+    end = models.DateField(verbose_name='结束时间', help_text='结束时间', null=True, blank=True)
+    position = models.CharField(verbose_name='工作单位', help_text='工作单位', max_length=250)
+    shenfenguilei = models.ForeignKey(ShenFenGuiLei, verbose_name='身份归类', on_delete=models.DO_NOTHING)
+    post = models.CharField(verbose_name='身份或职务', help_text='身份或职务', max_length=250, default='')
+    remarks = models.CharField(verbose_name='备注', help_text='备注', max_length=250, default='')
+
+    # 创建时间
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    # 最后更新时间
+    update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
+    # 是否删除
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
 
 # 学历信息

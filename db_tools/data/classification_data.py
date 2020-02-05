@@ -8,7 +8,7 @@
 # 人员类别
 CategoryType_data = [{'name': '勤务辅警', 'introduce': '已经转为辅警的编制人员。', 'index': 1},
                      {'name': '协勤队员', 'introduce': '未转为辅警的编制人员，原来的特保队员。', 'index': 2},
-                     {'name': '特勤队员', 'introduce': '监委的编制人员', 'index': 3},
+                     {'name': '护卫队员', 'introduce': '监委的编制人员', 'index': 3},
                      {'name': '工勤人员', 'introduce': '车班', 'index': 4},
                      {'name': '民警', 'introduce': '民警，一般用于设置管理账号', 'index': 5}]
 
@@ -70,35 +70,40 @@ DaduiZhongduiType_data = [{'name': '一大队', 'introduce': '一大队', 'index
                                {'name': '门岗', 'introduce': '门岗', 'index': 105, 'category_type': '小组'},
                                {'name': '车班', 'introduce': '车班', 'index': 106, 'category_type': '小组'}
                            ]},
+                          {'name': '岗前轮训', 'introduce': '新入职队员训练大队', 'index': 990, 'category_type': '大队', 'data': [
+                              {'name': '一中队', 'introduce': '一中队', 'index': 991, 'category_type': '中队'},
+                              {'name': '二中队', 'introduce': '二中队', 'index': 992, 'category_type': '中队'}
+                          ]}
                           ]
 
-# 大队类别
-DaDuiType_data = [{'name': '一大队', 'introduce': '一大队', 'index': 1},
-                  {'name': '二大队', 'introduce': '二大队', 'index': 2},
-                  {'name': '三大队', 'introduce': '三大队', 'index': 3},
-                  {'name': '四大队', 'introduce': '四大队', 'index': 4},
-                  {'name': '警保大队', 'introduce': '警保大队', 'index': 5},
-                  ]
+# # 大队类别
+# DaDuiType_data = [{'name': '一大队', 'introduce': '一大队', 'index': 1},
+#                   {'name': '二大队', 'introduce': '二大队', 'index': 2},
+#                   {'name': '三大队', 'introduce': '三大队', 'index': 3},
+#                   {'name': '四大队', 'introduce': '四大队', 'index': 4},
+#                   {'name': '警保大队', 'introduce': '警保大队', 'index': 5},
+#                   {'name': '岗前轮训', 'introduce': '新入职队员训练大队', 'index': 6}
+#                   ]
 
-# 中队（小组）类别
-ZhongDuiType_data = [{'name': '一中队', 'introduce': '一中队', 'index': 1},
-                     {'name': '二中队', 'introduce': '二中队', 'index': 2},
-                     {'name': '三中队', 'introduce': '三中队', 'index': 3},
-                     {'name': '四中队', 'introduce': '四中队', 'index': 4},
-                     {'name': '五中队', 'introduce': '五中队', 'index': 5},
-                     {'name': '六中队', 'introduce': '六中队', 'index': 6},
-                     {'name': '七中队', 'introduce': '七中队', 'index': 7},
-                     {'name': '八中队', 'introduce': '八中队', 'index': 8},
-                     {'name': '九中队', 'introduce': '九中队', 'index': 9},
-                     {'name': '十中队', 'introduce': '十中队', 'index': 10},
-                     {'name': '十一中队', 'introduce': '十一中队', 'index': 11},
-                     {'name': '十二中队', 'introduce': '十二中队', 'index': 12},
-                     {'name': '应急指挥', 'introduce': '应急指挥', 'index': 13},
-                     {'name': '应急保障（1）', 'introduce': '应急保障（1）', 'index': 14},
-                     {'name': '应急保障（2）', 'introduce': '应急保障（2）', 'index': 15},
-                     {'name': '应急保障（3）', 'introduce': '应急保障（3）', 'index': 16},
-                     {'name': '门岗', 'introduce': '门岗', 'index': 17},
-                     ]
+# # 中队（小组）类别
+# ZhongDuiType_data = [{'name': '一中队', 'introduce': '一中队', 'index': 1},
+#                      {'name': '二中队', 'introduce': '二中队', 'index': 2},
+#                      {'name': '三中队', 'introduce': '三中队', 'index': 3},
+#                      {'name': '四中队', 'introduce': '四中队', 'index': 4},
+#                      {'name': '五中队', 'introduce': '五中队', 'index': 5},
+#                      {'name': '六中队', 'introduce': '六中队', 'index': 6},
+#                      {'name': '七中队', 'introduce': '七中队', 'index': 7},
+#                      {'name': '八中队', 'introduce': '八中队', 'index': 8},
+#                      {'name': '九中队', 'introduce': '九中队', 'index': 9},
+#                      {'name': '十中队', 'introduce': '十中队', 'index': 10},
+#                      {'name': '十一中队', 'introduce': '十一中队', 'index': 11},
+#                      {'name': '十二中队', 'introduce': '十二中队', 'index': 12},
+#                      {'name': '应急指挥', 'introduce': '应急指挥', 'index': 13},
+#                      {'name': '应急保障（1）', 'introduce': '应急保障（1）', 'index': 14},
+#                      {'name': '应急保障（2）', 'introduce': '应急保障（2）', 'index': 15},
+#                      {'name': '应急保障（3）', 'introduce': '应急保障（3）', 'index': 16},
+#                      {'name': '门岗', 'introduce': '门岗', 'index': 17},
+#                      ]
 
 # 编制位置
 Organization_data = [{'name': '特警支队', 'introduce': '本单位编制', 'index': 1},
@@ -176,7 +181,11 @@ RenYuanXianZhuang_data = [{'name': '学龄前', 'introduce': '学龄前', 'index
                           {'name': '去世', 'introduce': '去世', 'index': 6}, ]
 
 # 身份归类
-ShenFenGuiLei_data = [{'name': '学龄前儿童', 'introduce': '学龄前儿童', 'index': 1},
+ShenFenGuiLei_data = [{'name': '勤务辅警', 'introduce': '辅警', 'index': 0},
+                      {'name': '协勤队员', 'introduce': '协勤', 'index': 0},
+                      {'name': '护卫队员', 'introduce': '护卫', 'index': 0},
+                      {'name': '工勤人员', 'introduce': '工勤', 'index': 0},
+                      {'name': '学龄前儿童', 'introduce': '学龄前儿童', 'index': 1},
                       {'name': '学生', 'introduce': '学生', 'index': 2},
                       {'name': '公务员', 'introduce': '公务员', 'index': 3},
                       {'name': '事业单位职工', 'introduce': '事业单位职工', 'index': 4},
