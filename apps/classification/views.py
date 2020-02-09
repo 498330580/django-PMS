@@ -5,8 +5,13 @@ from django.shortcuts import render
 from drf_multiple_model.viewsets import ObjectMultipleModelAPIViewSet
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 
-from .serializers import *
-from .models import *
+from rest_framework import viewsets
+from rest_framework import mixins
+from django_filters.rest_framework import DjangoFilterBackend
+
+from classification.serializers import *
+from classification.models import *
+from classification.fiters import *
 
 
 # from rest_framework.authentication import TokenAuthentication, SessionAuthentication, BasicAuthentication
@@ -53,8 +58,8 @@ class Type(ObjectMultipleModelAPIViewSet):
         {'queryset': CategoryType.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
         {'queryset': DemobilizedType.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
         {'queryset': DrivingLicenseType.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
-        {'queryset': DaDuiType.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
-        {'queryset': ZhongDuiType.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
+        # {'queryset': DaDuiType.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
+        # {'queryset': ZhongDuiType.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
         {'queryset': Organization.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
         {'queryset': Borrow.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
         {'queryset': Economics.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
@@ -62,8 +67,8 @@ class Type(ObjectMultipleModelAPIViewSet):
         {'queryset': EducationType.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
         {'queryset': AcademicDegreeType.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
         {'queryset': CarType.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
-        {'queryset': PostType.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
-        {'queryset': PostName.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
+        # {'queryset': PostType.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
+        # {'queryset': PostName.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
         {'queryset': XueLiInformation.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
         {'queryset': RenYuanXianZhuang.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
         {'queryset': ShenFenGuiLei.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
@@ -71,3 +76,16 @@ class Type(ObjectMultipleModelAPIViewSet):
         {'queryset': TiJianJieGuo.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
         {'queryset': Year.objects.filter(is_delete=False), 'serializer_class': YearSerializer},
     ]
+
+
+class DaduiZhongduiTypeList(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+     list:权限列表
+    """
+    queryset = DaduiZhongduiType.objects.all()
+    serializer_class = DaduiZhongduiTypeSerializer
+
+    filter_backends = [DjangoFilterBackend,  # django_filters过滤
+                       ]
+
+    filter_class = DaduiZhongduiTypeFilter

@@ -1,11 +1,10 @@
-# from django.db import models
-
 # Create your models here.
 from django.contrib.auth.models import Group
 import datetime
 from dateutil.relativedelta import relativedelta
-
 from classification.models import *
+
+from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 from .tools import GetInformation
@@ -96,6 +95,7 @@ class Role(models.Model):
 class PersonalInformation(models.Model):
     user = models.OneToOneField(UserInformation, verbose_name='用户', on_delete=models.CASCADE,
                                 help_text='关联的账号，一对一关联，必须唯一')
+    idfj = models.CharField(max_length=10, verbose_name='辅警编号', help_text='辅警编号', default='未分配')
     name = models.CharField(max_length=10, verbose_name='姓名', help_text='姓名', db_index=True)
     named = models.CharField(max_length=10, verbose_name='曾用名', default='无', help_text='曾用名')
     nation = models.CharField(max_length=10, verbose_name='民族', default='汉族', choices=NATION, help_text='民族')
@@ -116,25 +116,22 @@ class PersonalInformation(models.Model):
     jiguan = models.ForeignKey(DiZhi, verbose_name='籍贯', on_delete=models.SET_NULL, null=True, blank=True,
                                help_text='籍贯，系统会根据身份证自动填写')
     permanent = models.CharField(max_length=100, verbose_name='户籍地址', help_text='身份证上的地址')
-    permanenttype = models.CharField(max_length=10, default='',
-                                     choices=(("城镇", "城镇"), ("农村", "农村"),),
-                                     verbose_name="户籍类别", help_text='户籍类别')
+    permanenttype = models.ForeignKey(PermanentType, verbose_name="户籍类别", help_text='户籍类别',
+                                      on_delete=models.SET_NULL, null=True, blank=True)
     home = models.CharField(max_length=100, verbose_name='现居地址', help_text='现在居住的地址，能联系到的，可以和户籍地址相同')
     mobile = models.CharField(max_length=11, unique=True, verbose_name='手机号码', help_text='手机号码，字段在数据库中必须唯一"')
     hobby = models.CharField(max_length=100, verbose_name='爱好/特长', default='无', help_text='爱好/特长')
-    politics = models.CharField(max_length=10,
-                                choices=(("群众", "群众"), ("共青团员", "共青团员"), ("中共党员", "中共党员"),),
-                                verbose_name='政治面貌', help_text='政治面貌',
-                                default="群众")
-    politicstime = models.DateField(verbose_name='入党/团时间', null=True, blank=True, help_text='入党/团时间')
-    category = models.ForeignKey(CategoryType, verbose_name='人员类别', on_delete=models.SET_NULL, null=True, blank=True,
-                                 help_text='人员类别，本信息由管理员填写')
+    """↓单独创建一个党团关系表↓"""
+    # politics = models.CharField(max_length=10,
+    #                             choices=(("群众", "群众"), ("共青团员", "共青团员"), ("中共党员", "中共党员"),),
+    #                             verbose_name='政治面貌', help_text='政治面貌',
+    #                             default="群众")
+    # politicstime = models.DateField(verbose_name='入党/团时间', null=True, blank=True, help_text='入党/团时间')
+    """↑单独创建一个党团关系表↑"""
     veteran = models.ForeignKey(DemobilizedType, verbose_name='退役类别', on_delete=models.SET_NULL, null=True,
                                 blank=True, help_text='退役类别')
-    marriage = models.CharField(max_length=10,
-                                choices=(("已婚", "已婚"), ("未婚", "未婚"), ("离婚", "离婚"), ('丧偶', '丧偶')),
-                                default='未婚',
-                                verbose_name='婚姻状态', help_text='婚姻状态')
+    marriage = models.ForeignKey(Marriage, max_length=10, verbose_name='婚姻状态', help_text='婚姻状态',
+                                 on_delete=models.SET_NULL, null=True, blank=True)
     drivinglicense = models.ForeignKey(DrivingLicenseType, verbose_name='驾照', on_delete=models.SET_NULL, null=True,
                                        blank=True, default=1, help_text='驾照')
     """以下可以设计为在职履历信息（单独设计一个关联的ForeignKey表）"""
@@ -145,17 +142,25 @@ class PersonalInformation(models.Model):
     # fujingzhuanzheng = models.DateField(verbose_name='辅警入职转正时间', null=True, blank=True,
     #                                     help_text='辅警入职转正时间，本信息由管理员填写（协勤不填写此项）')
     """以上可以设计为在职履历信息（单独设计一个关联的ForeignKey表）"""
-    quit = models.DateField(verbose_name='离职/调离时间', null=True, blank=True, help_text='离职/调离时间，本信息由管理员填写')
+    """↓已加入用工信息表↓"""
+    # category = models.ForeignKey(CategoryType, verbose_name='人员类别', on_delete=models.SET_NULL, null=True, blank=True,
+    #                              help_text='人员类别，本信息由管理员填写')
+    # gangweitype = models.ForeignKey(PostType, verbose_name='岗位类别', on_delete=models.SET_NULL, null=True, blank=True,
+    #                                 help_text='岗位类别，本信息由管理员填写')
+    # gangweiname = models.ForeignKey(PostName, verbose_name='岗位名称', on_delete=models.SET_NULL, null=True, blank=True,
+    #                                 help_text='岗位名称，本信息由管理员填写')
+    # quit = models.DateField(verbose_name='离职/调离时间', null=True, blank=True, help_text='离职/调离时间，本信息由管理员填写')
+    """↑已加入用工信息表↑"""
     """以下信息准备改写（已改写）"""
     # dadui = models.ForeignKey(DaDuiType, verbose_name='所属大队', on_delete=models.SET_NULL, null=True, blank=True,
     #                           help_text='所属大队，本信息由管理员填写')
     dadui = models.ForeignKey(DaduiZhongduiType, verbose_name='所属大队', on_delete=models.SET_NULL, null=True, blank=True,
-                              help_text='所属大队，本信息由管理员填写')
+                              help_text='所属大队，本信息由管理员填写', related_name="dadui_type")
     # zhongdui = models.ForeignKey(ZhongDuiType, verbose_name='所属中队（小组）', on_delete=models.SET_NULL, null=True,
     #                              blank=True, help_text='所属中队（小组），本信息由管理员填写')
-    """以上信息准备改写"""
     fenzu = models.ForeignKey(DaduiZhongduiType, verbose_name='所属分组', on_delete=models.SET_NULL, null=True,
-                              blank=True, help_text='所属分组，本信息由管理员填写')
+                              blank=True, help_text='所属分组，本信息由管理员填写', related_name="fenzu_type")
+    """以上信息准备改写"""
     jiediao = models.ForeignKey(Borrow, verbose_name='借调位置', on_delete=models.SET_NULL, null=True, blank=True,
                                 help_text='借调位置，本信息由管理员填写')
     bianzhi = models.ForeignKey(Organization, verbose_name='编制位置', on_delete=models.SET_NULL, null=True, blank=True,
@@ -164,12 +169,9 @@ class PersonalInformation(models.Model):
                                   help_text='家庭经济状态')
     sources = models.ForeignKey(Sources, verbose_name='家庭经济状态，经济来源', on_delete=models.SET_NULL, null=True, blank=True,
                                 help_text='家庭经济状态，经济来源')
-    gangweitype = models.ForeignKey(PostType, verbose_name='岗位类别', on_delete=models.SET_NULL, null=True, blank=True,
-                                    help_text='岗位类别，本信息由管理员填写')
-    gangweiname = models.ForeignKey(PostName, verbose_name='岗位名称', on_delete=models.SET_NULL, null=True, blank=True,
-                                    help_text='岗位名称，本信息由管理员填写')
-    zhuangtai = models.CharField(verbose_name='人员状态', max_length=6, choices=(('在岗', '在岗'), ('离职', '离职'), ('调离', '调离')),
-                                 default='在岗', help_text='人员状态')
+    # zhuangtai = models.CharField(verbose_name='人员状态', max_length=6, choices=(('在岗', '在岗'), ('离职', '离职'), ('调离', '调离')),
+    #                              default='在岗', help_text='人员状态')
+
     beizhu = models.CharField(default='', verbose_name='备注', max_length=500, help_text='备注')
     # 创建时间
     create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
@@ -181,11 +183,13 @@ class PersonalInformation(models.Model):
     class Meta:
         verbose_name = '个人档案'
         verbose_name_plural = verbose_name
-        ordering = ['-entry']
+        ordering = ['dadui']
 
     def save(self, *args, **kwargs):
         if self.idnumber:
-            getInformation = GetInformation(self.idnumber)
+            self.idfj = self.idfj.upper()
+            self.idnumber = self.idnumber.upper()
+            getInformation = GetInformation(self.idnumber.upper())
             shengri = getInformation.get_birthday()
             jiguan = getInformation.get_6()
             dizhi = DiZhi.objects.filter(dizhi_id=jiguan)
@@ -205,14 +209,55 @@ class PersonalInformation(models.Model):
         return "%s-%s-%s" % (self.name, self.fenzu, self.idnumber)
 
 
-# 履历信息
-class Lvli(models.Model):
-    name = models.ForeignKey(PersonalInformation, verbose_name='姓名', help_text='姓名', on_delete=models.CASCADE)
-    start = models.DateField(verbose_name='开始时间', help_text='开始时间')
+# 党团关系
+class DangTuan(models.Model):
+    name = models.ForeignKey(PersonalInformation, verbose_name='姓名', help_text='姓名', on_delete=models.CASCADE,
+                             related_name='dangtuans')
+    start = models.DateField(verbose_name='加入时间', help_text='开始时间', null=True, blank=True)
+    end = models.DateField(verbose_name='退出时间', help_text='结束时间', null=True, blank=True)
+    politics = models.ForeignKey(Politics, verbose_name='政治面貌', help_text='政治面貌', on_delete=models.DO_NOTHING)
+
+    # 创建时间
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    # 最后更新时间
+    update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
+    # 是否删除
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
+
+    class Meta:
+        verbose_name = '党团关系'
+        verbose_name_plural = verbose_name
+        ordering = ['-start']
+
+    def __str__(self):
+        return "%s-%s" % (self.name, self.politics)
+
+
+# 用工信息
+class YongGong(models.Model):
+    """注意添加到履历信息中，本信息用于判断人员是否离职与调离、判断人员是否已转辅警、判断人员是否为直接考入人员"""
+    name = models.ForeignKey(PersonalInformation, verbose_name='姓名', help_text='姓名', on_delete=models.CASCADE,
+                             related_name='yonggongs')
+    start = models.DateField(verbose_name='开始时间', help_text='开始时间（以第一次合同号的签订日期为准）')
+    hetong_time = models.DateField(verbose_name='合同签订时间', help_text='合同签订时间')
+    shixiqi = models.IntegerField(verbose_name='实习期', help_text='实习期（单位：月，type:int）')
+    zhuanzheng = models.DateField(verbose_name='转正时间', help_text='转正时间（以第一次合同号的签订日期为准）')
     end = models.DateField(verbose_name='结束时间', help_text='结束时间', null=True, blank=True)
-    position = models.CharField(verbose_name='工作单位', help_text='工作单位', max_length=250)
-    shenfenguilei = models.ForeignKey(ShenFenGuiLei, verbose_name='身份归类', on_delete=models.DO_NOTHING)
-    post = models.CharField(verbose_name='身份或职务', help_text='身份或职务', max_length=250, default='')
+    yonggongtype = models.ForeignKey(YongGongType, verbose_name='用工方式', help_text='用工方式',
+                                     on_delete=models.SET_NULL, null=True, blank=True)
+    hetong = models.IntegerField(verbose_name='合同期限（单位：年）', help_text='合同期限（单位：年，type:int）')
+    position = models.CharField(verbose_name='工作单位', help_text='工作单位', max_length=250, default='重庆市公安局北碚区分局特警支队')
+    dispatch = models.CharField(verbose_name='派遣公司', help_text='派遣公司', max_length=250, default='重庆市北碚区保安服务有限公司',
+                                null=True, blank=True)
+    shenfenguilei = models.ForeignKey(CategoryType, verbose_name='人员类别', help_text='人员类别', related_name="renyuan_type",
+                                      on_delete=models.SET_NULL, null=True, blank=True)
+    gangweitype = models.ForeignKey(CategoryType, verbose_name='岗位类别', on_delete=models.SET_NULL, null=True, blank=True,
+                                    help_text='岗位类别，本信息由管理员填写', related_name="gangwei_type")
+    gangweiname = models.ForeignKey(CategoryType, verbose_name='岗位名称', on_delete=models.SET_NULL, null=True, blank=True,
+                                    help_text='岗位名称，本信息由管理员填写', related_name="gangweiname_type")
+    post = models.CharField(verbose_name='身份或职务', help_text='身份或职务', max_length=250, default='队员')
+    zhuangtai = models.ForeignKey(ZhuangTai, verbose_name='人员状态', on_delete=models.SET_NULL, null=True, blank=True,
+                                  help_text='人员状态')
     remarks = models.CharField(verbose_name='备注', help_text='备注', max_length=250, default='')
 
     # 创建时间
@@ -222,10 +267,74 @@ class Lvli(models.Model):
     # 是否删除
     is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
+    class Meta:
+        verbose_name = '用工信息'
+        verbose_name_plural = verbose_name
+        ordering = ['-start']
+
+    def __str__(self):
+        return "%s-%s-%s" % (self.name, self.shenfenguilei, self.position)
+
+    def save(self, *args, **kwargs):
+        # print(self.start, self.shixiqi)
+        self.zhuanzheng = self.start - relativedelta(months=-self.shixiqi)
+        # if Lvli.objects.all():
+        #     if not Lvli.objects.filter(name=self.name, position=self.position,
+        #                                start=self.start):
+        #         """新建履历信息"""
+        #         lvli = Lvli()
+        #         lvli.name = self.name
+        #         lvli.start = self.start
+        #         lvli.end = self.end
+        #         lvli.position = self.position
+        #         lvli.shenfenguilei = self.shenfenguilei
+        #         lvli.post = self.post
+        #         lvli.remarks = self.remarks
+        #         lvli.save()
+        #     if Lvli.objects.filter(name=self.name,
+        #                            position=self.position,
+        #                            start=self.start).exclude(end=self.end):
+        #         """修改信息的情况"""
+        #         lvli = Lvli.objects.get(name=self.name,
+        #                                 position=self.position,
+        #                                 start=self.start,
+        #                                 shenfenguilei=self.shenfenguilei)
+        #         lvli.end = self.end
+        #         lvli.save()
+        super().save(*args, **kwargs)
+
+
+# 履历信息
+class Lvli(models.Model):
+    """注意与用工信息同步"""
+    name = models.ForeignKey(PersonalInformation, verbose_name='姓名', help_text='姓名', on_delete=models.CASCADE,
+                             related_name='lvlis')
+    start = models.DateField(verbose_name='开始时间', help_text='开始时间')
+    end = models.DateField(verbose_name='结束时间', help_text='结束时间', null=True, blank=True)
+    position = models.CharField(verbose_name='工作单位', help_text='工作单位', max_length=250, default='重庆市公安局北碚区分局特警支队')
+    shenfenguilei = models.ForeignKey(ShenFenGuiLei, verbose_name='身份归类', on_delete=models.DO_NOTHING)
+    post = models.CharField(verbose_name='身份或职务', help_text='身份或职务', max_length=250, default='队员')
+    remarks = models.CharField(verbose_name='备注', help_text='备注', max_length=250, default='')
+
+    # 创建时间
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    # 最后更新时间
+    update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
+    # 是否删除
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
+
+    class Meta:
+        verbose_name = '履历信息'
+        verbose_name_plural = verbose_name
+        ordering = ['-start']
+
+    def __str__(self):
+        return "%s-%s-%s" % (self.name, self.shenfenguilei, self.position)
+
 
 # 学历信息
 class Education(models.Model):
-    name = models.ForeignKey(PersonalInformation, verbose_name='姓名', on_delete=models.CASCADE)
+    name = models.ForeignKey(PersonalInformation, verbose_name='姓名', on_delete=models.CASCADE, related_name='educations')
     school = models.CharField(verbose_name='学校名称', max_length=50)
     xueli = models.ForeignKey(EducationType, verbose_name='学历', on_delete=models.DO_NOTHING)
     academicdegree = models.ForeignKey(AcademicDegreeType, verbose_name='学位', on_delete=models.SET_NULL, null=True,

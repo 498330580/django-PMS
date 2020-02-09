@@ -3,11 +3,21 @@ from django.db import models
 # Create your models here.
 
 
-# 人员类别
+# 人员/岗位/岗位名称类别
 class CategoryType(models.Model):
-    name = models.CharField(verbose_name='人员类别名称', max_length=10, db_index=True)
+    CATEGORY_TYPE = (
+        ("人员类别", "人员类别"),
+        ("岗位类别", "岗位类别"),
+        ("岗位名称", "岗位名称")
+    )
+
+    name = models.CharField(verbose_name='类别名称', max_length=10, db_index=True)
     introduce = models.TextField(verbose_name='类别介绍')
     index = models.IntegerField(default=999, verbose_name='分类排序(从小到大)')
+
+    category_type = models.CharField(choices=CATEGORY_TYPE, max_length=10, verbose_name="类目级别", help_text="类目级别")
+    parent_category = models.ForeignKey("self", null=True, blank=True, verbose_name="父类级别", help_text="父分组",
+                                        related_name="sub_cat", on_delete=models.CASCADE)
 
     # 创建时间
     create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
@@ -22,7 +32,10 @@ class CategoryType(models.Model):
         ordering = ['index', 'id']
 
     def __str__(self):
-        return self.name
+        if self.parent_category:
+            return '%s-%s' % (self.parent_category, self.name)
+        else:
+            return self.name
 
 
 # 退伍军人类别
@@ -316,48 +329,48 @@ class CarType(models.Model):
         return self.name
 
 
-# 岗位类别
-class PostType(models.Model):
-    name = models.CharField(verbose_name='类别名称', max_length=10)
-    introduce = models.TextField(verbose_name='类别介绍')
-    index = models.IntegerField(default=999, verbose_name='分类排序(从小到大)')
+# # 岗位类别
+# class PostType(models.Model):
+#     name = models.CharField(verbose_name='类别名称', max_length=10)
+#     introduce = models.TextField(verbose_name='类别介绍')
+#     index = models.IntegerField(default=999, verbose_name='分类排序(从小到大)')
+#
+#     # 创建时间
+#     create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+#     # 最后更新时间
+#     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
+#     # 是否删除
+#     is_delete = models.BooleanField(default=False, verbose_name='是否删除')
+#
+#     class Meta:
+#         verbose_name = '岗位类别信息'
+#         verbose_name_plural = verbose_name
+#         ordering = ['index', 'id']
+#
+#     def __str__(self):
+#         return self.name
 
-    # 创建时间
-    create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
-    # 最后更新时间
-    update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
-    # 是否删除
-    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
-    class Meta:
-        verbose_name = '岗位类别信息'
-        verbose_name_plural = verbose_name
-        ordering = ['index', 'id']
-
-    def __str__(self):
-        return self.name
-
-
-# 岗位名称
-class PostName(models.Model):
-    name = models.CharField(verbose_name='岗位名称', max_length=10, db_index=True)
-    introduce = models.TextField(verbose_name='岗位介绍')
-    index = models.IntegerField(default=999, verbose_name='分类排序(从小到大)')
-
-    # 创建时间
-    create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
-    # 最后更新时间
-    update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
-    # 是否删除
-    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
-
-    class Meta:
-        verbose_name = '岗位名称信息'
-        verbose_name_plural = verbose_name
-        ordering = ['index', 'id']
-
-    def __str__(self):
-        return self.name
+# # 岗位名称
+# class PostName(models.Model):
+#     name = models.CharField(verbose_name='岗位名称', max_length=10, db_index=True)
+#     introduce = models.TextField(verbose_name='岗位介绍')
+#     index = models.IntegerField(default=999, verbose_name='分类排序(从小到大)')
+#
+#     # 创建时间
+#     create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+#     # 最后更新时间
+#     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
+#     # 是否删除
+#     is_delete = models.BooleanField(default=False, verbose_name='是否删除')
+#
+#     class Meta:
+#         verbose_name = '岗位名称信息'
+#         verbose_name_plural = verbose_name
+#         ordering = ['index', 'id']
+#
+#     def __str__(self):
+#         return self.name
 
 
 # 学历说明
@@ -509,3 +522,114 @@ class DiZhi(models.Model):
     def __str__(self):
         # return '%s-%s' % (self.dizhi_id, self.jiguan)
         return self.jiguan
+
+
+# 政治面貌
+class Politics(models.Model):
+    name = models.CharField(verbose_name='名称', max_length=10, db_index=True)
+    introduce = models.TextField(verbose_name='说明介绍')
+    index = models.IntegerField(default=999, verbose_name='分类排序(从小到大)')
+
+    # 创建时间
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    # 最后更新时间
+    update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
+    # 是否删除
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
+
+    class Meta:
+        verbose_name = '政治面貌'
+        verbose_name_plural = verbose_name
+        ordering = ['index', 'id']
+
+    def __str__(self):
+        return self.name
+
+
+# 户籍类别
+class PermanentType(models.Model):
+    name = models.CharField(verbose_name='名称', max_length=10, db_index=True)
+    introduce = models.TextField(verbose_name='说明介绍')
+    index = models.IntegerField(default=999, verbose_name='分类排序(从小到大)')
+
+    # 创建时间
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    # 最后更新时间
+    update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
+    # 是否删除
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
+
+    class Meta:
+        verbose_name = '户籍类别'
+        verbose_name_plural = verbose_name
+        ordering = ['index', 'id']
+
+    def __str__(self):
+        return self.name
+
+
+# 婚姻状况
+class Marriage(models.Model):
+    name = models.CharField(verbose_name='名称', max_length=10, db_index=True)
+    introduce = models.TextField(verbose_name='说明介绍')
+    index = models.IntegerField(default=999, verbose_name='分类排序(从小到大)')
+
+    # 创建时间
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    # 最后更新时间
+    update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
+    # 是否删除
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
+
+    class Meta:
+        verbose_name = '婚姻状况'
+        verbose_name_plural = verbose_name
+        ordering = ['index', 'id']
+
+    def __str__(self):
+        return self.name
+
+
+# 人员状态
+class ZhuangTai(models.Model):
+    name = models.CharField(verbose_name='名称', max_length=10, db_index=True)
+    introduce = models.TextField(verbose_name='说明介绍')
+    index = models.IntegerField(default=999, verbose_name='分类排序(从小到大)')
+
+    # 创建时间
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    # 最后更新时间
+    update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
+    # 是否删除
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
+
+    class Meta:
+        verbose_name = '人员状态'
+        verbose_name_plural = verbose_name
+        ordering = ['index', 'id']
+
+    def __str__(self):
+        return self.name
+
+
+# 用工方式
+class YongGongType(models.Model):
+    name = models.CharField(verbose_name='名称', max_length=10, db_index=True)
+    introduce = models.TextField(verbose_name='说明介绍')
+    index = models.IntegerField(default=999, verbose_name='分类排序(从小到大)')
+
+    # 创建时间
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    # 最后更新时间
+    update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
+    # 是否删除
+    is_delete = models.BooleanField(default=False, verbose_name='是否删除')
+
+    class Meta:
+        verbose_name = '人员状态'
+        verbose_name_plural = verbose_name
+        ordering = ['index', 'id']
+
+    def __str__(self):
+        return self.name
+

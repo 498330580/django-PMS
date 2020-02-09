@@ -23,9 +23,9 @@ from rest_framework.routers import DefaultRouter
 # from rest_framework.authtoken import views      # drf登录
 # from rest_framework_jwt.views import obtain_jwt_token   # JWT登录验证
 
-from apps.users.views import PersonalInformationList, Login, UserInformationList, GroupList, PermissionList, UserInformationNoneList
-from apps.vue_pms.views import MenuViewset
-from classification.views import Type
+from users.views import PersonalInformationList, Login, UserInformationList, GroupList, PermissionList, UserInformationNoneList
+from vue_pms.views import MenuViewset
+from classification.views import Type, DaduiZhongduiTypeList
 
 router = DefaultRouter(trailing_slash=False)
 
@@ -36,6 +36,7 @@ router.register(r'UserInformationNoneList', UserInformationNoneList, basename='U
 router.register(r'Type', Type, basename='Type')
 router.register(r'GroupList', GroupList, basename='GroupList')
 router.register(r'PermissionList', PermissionList, basename='PermissionList')
+router.register(r'DaduiZhongduiTypeList', DaduiZhongduiTypeList, basename='DaduiZhongduiTypeList')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

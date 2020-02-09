@@ -4,8 +4,8 @@ from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 
-from .models import Menu
-from .serializers import MenuSerializer
+from vue_pms.models import Menu
+from vue_pms.serializers import MenuSerializer
 
 
 class MenuViewset(mixins.ListModelMixin, viewsets.GenericViewSet):

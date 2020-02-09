@@ -5,9 +5,10 @@ from django.contrib.auth.models import Group, Permission
 # Create your views here.
 # from rest_framework.generics import get_object_or_404
 
-from .models import PersonalInformation, UserInformation, Role
-from classification.models import *
-from .serializers import *
+from users.models import PersonalInformation, UserInformation, Role
+from classification.models import DaduiZhongduiType
+from users.serializers import PersonalInformationListSerializer, PersonalInformationSerializer, UserInformationSerializer
+from users.serializers import UserInformationNoneSerializer, GroupSerializer, PermissionSerializer
 # from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -21,7 +22,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 # 重构token登录验证返回
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
-from rest_framework.status import HTTP_200_OK, HTTP_403_FORBIDDEN
+from rest_framework.status import HTTP_200_OK
 
 from .filters import PersonalInformationFilter
 
@@ -46,7 +47,7 @@ class PersonalInformationList(viewsets.ModelViewSet):
     partial_update:增量更新个人信息
     """
     # queryset = PersonalInformation.objects.all()
-    serializer_class = PersonalInformationSerializer
+    # serializer_class = PersonalInformationSerializer
     pagination_class = PersonalInformationPagination
     authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
     permission_classes = (
@@ -69,7 +70,14 @@ class PersonalInformationList(viewsets.ModelViewSet):
     search_fields = ['name', 'named', 'idnumber']
 
     # drf排序设置
-    ordering_fields = ['category']
+    ordering_fields = ['dadui', ]
+
+    # 动态分配serializer
+    def get_serializer_class(self):
+        if self.action == "list" or self.action == "retrieve":
+            return PersonalInformationListSerializer
+        else:
+            return PersonalInformationSerializer
 
     def get_queryset(self):
         """设置列表返回数据"""
@@ -80,6 +88,7 @@ class PersonalInformationList(viewsets.ModelViewSet):
                 return PersonalInformation.objects.filter(is_delete=False)
             else:
                 role_fenzu = DaduiZhongduiType.objects.filter(role__users=username)
+                PersonalInformation.objects.filter()
 
                 if role_fenzu:
                     '''大队、中队、小组权限显示'''
@@ -126,7 +135,7 @@ class PersonalInformationList(viewsets.ModelViewSet):
 
 
 class UserInformationList(viewsets.ModelViewSet):
-    """list：个人信息"""
+    """list：个人账号信息"""
     queryset = UserInformation.objects.filter(is_superuser=False)
     serializer_class = UserInformationSerializer
     pagination_class = PersonalInformationPagination

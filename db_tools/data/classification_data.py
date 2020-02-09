@@ -6,11 +6,47 @@
 # @Software: PyCharm
 
 # 人员类别
-CategoryType_data = [{'name': '勤务辅警', 'introduce': '已经转为辅警的编制人员。', 'index': 1},
-                     {'name': '协勤队员', 'introduce': '未转为辅警的编制人员，原来的特保队员。', 'index': 2},
-                     {'name': '护卫队员', 'introduce': '监委的编制人员', 'index': 3},
-                     {'name': '工勤人员', 'introduce': '车班', 'index': 4},
-                     {'name': '民警', 'introduce': '民警，一般用于设置管理账号', 'index': 5}]
+CategoryType_data = [{'name': '勤务辅警', 'introduce': '已经转为辅警的编制人员。', 'index': 200, 'category_type': '人员类别',
+                      'data': [
+                          {'name': '治安辅助', 'introduce': '已经转为辅警的编制人员。', 'index': 210, 'category_type': '岗位类别',
+                           'data': [
+                               {'name': '维稳勤务岗', 'introduce': '已经转为辅警的编制人员。', 'index': 220, 'category_type': '岗位类别'}
+                           ]}
+                      ]},
+                     {'name': '协勤队员', 'introduce': '已经转为辅警的编制人员。', 'index': 300, 'category_type': '人员类别',
+                      'data': [
+                          {'name': '维稳协勤', 'introduce': '已经转为辅警的编制人员。', 'index': 310, 'category_type': '岗位类别',
+                           'data': [
+                               {'name': '维稳协勤岗', 'introduce': '已经转为辅警的编制人员。', 'index': 320, 'category_type': '岗位类别'}
+                           ]}
+                      ]},
+                     {'name': '护卫队员', 'introduce': '已经转为辅警的编制人员。', 'index': 400, 'category_type': '人员类别',
+                      'data': [
+                          {'name': '护卫特勤', 'introduce': '已经转为辅警的编制人员。', 'index': 410, 'category_type': '岗位类别',
+                           'data': [
+                               {'name': '护卫特勤岗', 'introduce': '已经转为辅警的编制人员。', 'index': 420, 'category_type': '岗位类别'}
+                           ]}
+                      ]},
+                     {'name': '工勤队员', 'introduce': '已经转为辅警的编制人员。', 'index': 500, 'category_type': '人员类别',
+                      'data': [
+                          {'name': '警务保障', 'introduce': '已经转为辅警的编制人员。', 'index': 510, 'category_type': '岗位类别',
+                           'data': [
+                               {'name': '警务保障岗', 'introduce': '已经转为辅警的编制人员。', 'index': 520, 'category_type': '岗位类别'}
+                           ]}
+                      ]},
+                     {'name': '民警', 'introduce': '已经转为辅警的编制人员。', 'index': 100, 'category_type': '人员类别',
+                      'data': [
+                          {'name': '特警', 'introduce': '已经转为辅警的编制人员。', 'index': 110, 'category_type': '岗位类别',
+                           'data': [
+                               {'name': '特警岗', 'introduce': '已经转为辅警的编制人员。', 'index': 120, 'category_type': '岗位类别'}
+                           ]}
+                      ]}
+                     # {'name': '勤务辅警', 'introduce': '已经转为辅警的编制人员。', 'index': 1},
+                     # {'name': '协勤队员', 'introduce': '未转为辅警的编制人员，原来的特保队员。', 'index': 2},
+                     # {'name': '护卫队员', 'introduce': '监委的编制人员', 'index': 3},
+                     # {'name': '工勤人员', 'introduce': '车班', 'index': 4},
+                     # {'name': '民警', 'introduce': '民警，一般用于设置管理账号', 'index': 5}]
+                     ]
 
 # 退伍军人类别
 DemobilizedType_data = [{'name': '未参军', 'introduce': '以前未参军人员。', 'index': 1},
@@ -29,6 +65,7 @@ DrivingLicenseType_data = [{'name': '未获得', 'introduce': '未获得', 'inde
                            {'name': 'B2D', 'introduce': 'B2D', 'index': 4},
                            {'name': 'B2E', 'introduce': 'B2E', 'index': 4},
                            {'name': 'E', 'introduce': 'E', 'index': 3},
+                           {'name': 'D', 'introduce': 'D', 'index': 3},
                            ]
 
 # 分组类别
@@ -184,7 +221,7 @@ RenYuanXianZhuang_data = [{'name': '学龄前', 'introduce': '学龄前', 'index
 ShenFenGuiLei_data = [{'name': '勤务辅警', 'introduce': '辅警', 'index': 0},
                       {'name': '协勤队员', 'introduce': '协勤', 'index': 0},
                       {'name': '护卫队员', 'introduce': '护卫', 'index': 0},
-                      {'name': '工勤人员', 'introduce': '工勤', 'index': 0},
+                      {'name': '工勤队员', 'introduce': '工勤', 'index': 0},
                       {'name': '学龄前儿童', 'introduce': '学龄前儿童', 'index': 1},
                       {'name': '学生', 'introduce': '学生', 'index': 2},
                       {'name': '公务员', 'introduce': '公务员', 'index': 3},
@@ -224,3 +261,34 @@ TiJianJieGuo_data = [{'name': '随访', 'introduce': '随访', 'index': 1},
 
 # 体检年份
 Year_data = [2019, 2020]
+
+# 政治面貌
+Politics_data = [{'name': '无', 'introduce': '无', 'index': 1},
+                 {'name': '群众', 'introduce': '群众', 'index': 2},
+                 {'name': '共青团员', 'introduce': '共青团员', 'index': 3},
+                 {'name': '中共党员', 'introduce': '中共党员', 'index': 4}]
+
+# 户籍类别
+PermanentType_data = [{'name': '城镇', 'introduce': '城镇', 'index': 1},
+                      {'name': '农村', 'introduce': '农村', 'index': 2},
+                      {'name': '不清', 'introduce': '不清', 'index': 3}
+                      ]
+
+# 婚姻状况
+Marriage_data = [{'name': '已婚', 'introduce': '已婚', 'index': 1},
+                 {'name': '离婚', 'introduce': '离婚', 'index': 2},
+                 {'name': '未婚', 'introduce': '未婚', 'index': 3},
+                 {'name': '丧偶', 'introduce': '丧偶', 'index': 4}
+                 ]
+
+# 人员状态
+ZhuangTai_data = [{'name': '在岗', 'introduce': '在岗', 'index': 1},
+                  {'name': '离职', 'introduce': '离职', 'index': 2},
+                  {'name': '调离', 'introduce': '调离', 'index': 3},
+                  {'name': '转辅', 'introduce': '转辅', 'index': 4}
+                  ]
+
+# 用工方式
+YongGong_data = [{'name': '劳务派遣', 'introduce': '劳务派遣', 'index': 1},
+                 {'name': '直接聘用', 'introduce': '直接聘用', 'index': 2}
+                 ]

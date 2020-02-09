@@ -2,14 +2,15 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import *
+from users.models import Role, UserInformation, PersonalInformation, Education, Car, DangTuan, YongGong, Lvli, \
+    HomeInformation, PhysicalExamination, MeasureInformation
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy
 from django.contrib.auth.models import Group
 # from dateutil.relativedelta import relativedelta
 # from apps.classification.models import DiZhi
 
-import datetime
+# import datetime
 
 from .tools import GetInformation
 
@@ -25,7 +26,7 @@ class UserInformationAdmin(UserAdmin):
     # empty_value_display = '-None-'
 
     def upper_case_name(self, obj):
-        return ("%s %s" % (obj.last_name, obj.first_name)).upper()
+        return "%s %s" % (obj.last_name, obj.first_name)
 
     upper_case_name.short_description = '姓名'
 
@@ -50,21 +51,42 @@ class EducationInline(admin.TabularInline):
     # Education 必须是models.py中的模型名称,大小写必须要匹配.这个模型为子表,以便可以被父表编辑
     model = Education
     # 默认显示条目的数量
-    extra = 1
+    extra = 0
     exclude = ['is_delete']
 
 
 class CarInline(admin.TabularInline):
     """车辆信息"""
     model = Car
-    extra = 1
+    extra = 0
+    exclude = ['is_delete']
+
+
+class DangTuanInline(admin.TabularInline):
+    """党团信息"""
+    model = DangTuan
+    extra = 0
+    exclude = ['is_delete']
+
+
+class YongGongInline(admin.TabularInline):
+    """用工信息"""
+    model = YongGong
+    extra = 0
+    exclude = ['is_delete']
+
+
+class LvliInline(admin.TabularInline):
+    """履历信息"""
+    model = Lvli
+    extra = 0
     exclude = ['is_delete']
 
 
 class HomeInformationInline(admin.TabularInline):
     """家庭人员信息"""
     model = HomeInformation
-    extra = 1
+    extra = 0
     exclude = ['is_delete']
 
     # 不可修改字段
@@ -96,25 +118,25 @@ class HomeInformationInline(admin.TabularInline):
 class PhysicalExaminationInline(admin.TabularInline):
     """个人体检信息"""
     model = PhysicalExamination
-    extra = 1
+    extra = 0
     exclude = ['is_delete']
 
 
 class MeasureInformationInline(admin.TabularInline):
     """个人量体信息"""
     model = MeasureInformation
-    extra = 1
+    extra = 0
     exclude = ['is_delete']
 
 
 class PersonalinformationAdmin(admin.ModelAdmin):
     """自定义个人档案后台模块"""
     list_display = (
-        'name', 'idnumber', 'sex', 'birthday', 'upper_case_age', 'permanenttype', 'dadui', 'zhongdui', 'bianzhi',
+        'name', 'idnumber', 'sex', 'birthday', 'upper_case_age', 'permanenttype', 'dadui', 'fenzu', 'bianzhi',
         'create_time', 'update_time', 'is_delete')  # 列表显示字段
-    list_filter = ('dadui', 'zhongdui', 'politics')  # 右侧过滤栏
+    list_filter = ('dadui', 'fenzu')  # 右侧过滤栏
     list_per_page = 25  # 列表显示数据条数
-    date_hierarchy = 'entry'  # 顶部显示时间索引
+    # date_hierarchy = 'entry'  # 顶部显示时间索引
     list_editable = ('is_delete',)  # 列表页可编辑字段
     search_fields = ['name', 'idnumber']  # 设置搜索字段
 
@@ -181,18 +203,15 @@ class PersonalinformationAdmin(admin.ModelAdmin):
     actions = ['make_delete', 'make_not_delete']
 
     # # Inline把EducationInline关联进来,让父表管理配置页面能同时编辑子表.
-    inlines = [EducationInline, CarInline, HomeInformationInline, PhysicalExaminationInline, MeasureInformationInline]
+    inlines = [EducationInline, CarInline, HomeInformationInline, PhysicalExaminationInline, MeasureInformationInline,
+               LvliInline, YongGongInline, DangTuanInline]
 
     fieldsets = (
         (gettext_lazy('个人信息'), {'fields': (
             'user', 'name', 'named', 'nation', 'mobile', 'permanenttype', 'idnumber', 'sex', 'birthday', 'jiguan',
-            'zodiac', 'constellation', 'permanent', 'home', 'hobby', 'politics', 'politicstime', 'drivinglicense',
+            'zodiac', 'constellation', 'permanent', 'home', 'hobby', 'drivinglicense',
             'marriage')}),
-        (gettext_lazy('职务信息'), {'fields': (('entry', 'entryzhuanzheng'),
-                                           ('zhuanfujing', 'fujingzhuanzheng'),
-                                           'quit',
-                                           ('category', 'gangweitype', 'gangweiname'),
-                                           ('dadui', 'zhongdui', 'fenzu'),
+        (gettext_lazy('职务信息'), {'fields': (('dadui', 'fenzu'),
                                            ('jiediao', 'bianzhi'),
                                            'veteran')}),
         (gettext_lazy('家庭经济'), {'fields': (('economics', 'sources'),)}),
@@ -252,15 +271,15 @@ class PersonalinformationAdmin(admin.ModelAdmin):
                 return fields
             elif '普通用户' in str(current_group_set):
                 fields = ['user', 'sex', 'birthday', 'constellation', 'jiguan', 'zodiac',
-                          'entry', 'entryzhuanzheng', 'zhuanfujing', 'fujingzhuanzheng', 'quit', 'category',
-                          'gangweitype', 'veteran',
-                          'gangweiname', 'dadui', 'zhongdui',
+                          'category',
+                          'veteran',
+                          'dadui', 'fenzu',
                           'jiediao', 'bianzhi', 'is_delete']
                 return fields
 
 
 class RoleAdmin(admin.ModelAdmin):
-    filter_horizontal = ['users', 'ranges_dadui', 'ranges_zhongdui', 'ranges_fenzu']
+    filter_horizontal = ['users', 'ranges_fenzu']
 
 
 admin.site.register(Role, RoleAdmin)

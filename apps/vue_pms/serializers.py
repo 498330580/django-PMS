@@ -7,7 +7,7 @@
 
 from rest_framework import serializers
 
-from .models import Menu
+from vue_pms.models import Menu
 
 
 class MenuSerializer3(serializers.ModelSerializer):

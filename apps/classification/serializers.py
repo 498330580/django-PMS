@@ -7,7 +7,7 @@
 
 
 from rest_framework import serializers
-# from apps.classification.models import *
+from classification.models import *
 
 
 # class CategoryTypeSerializer(serializers.ModelSerializer):
@@ -146,3 +146,17 @@ class TypeSerializer(serializers.Serializer):
 class YearSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     year = serializers.IntegerField()
+
+
+# 政治面貌（读）
+class PoliticsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Politics
+        exclude = []
+
+
+# 大队、中队、小组（读）
+class DaduiZhongduiTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DaduiZhongduiType
+        exclude = []

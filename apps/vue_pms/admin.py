@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import Menu, WebsiteConfig
+from vue_pms.models import Menu, WebsiteConfig
 
 
 class MenuAdmin(admin.ModelAdmin):
