@@ -8,7 +8,16 @@
 from django.contrib.auth.models import Group, Permission
 
 from rest_framework import serializers
-from users.models import PersonalInformation, UserInformation, DangTuan, YongGong
+from users.models import PersonalInformation, UserInformation, DangTuan, YongGong, Education
+
+
+# 学历信息（读）
+class EducationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Education
+        exclude = ['name']
+        depth = 1
 
 
 # 党团列表（读）
@@ -58,6 +67,7 @@ class PersonalInformationListSerializer(serializers.ModelSerializer):
     """列表、单独读取使用"""
     dangtuans = DangTuanSerializer(many=True, read_only=True)
     yonggongs = YongGongSerializer(many=True, read_only=True)
+    educations = EducationSerializer(many=True, read_only=True)
 
     class Meta:
         model = PersonalInformation

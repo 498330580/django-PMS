@@ -148,15 +148,29 @@ class YearSerializer(serializers.Serializer):
     year = serializers.IntegerField()
 
 
-# 政治面貌（读）
-class PoliticsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Politics
-        exclude = []
+# # 政治面貌（读）
+# class PoliticsSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Politics
+#         exclude = []
 
 
 # 大队、中队、小组（读）
 class DaduiZhongduiTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = DaduiZhongduiType
+        exclude = []
+
+
+# 籍贯地址序列化
+class DiZhiSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DiZhi
+        exclude = []
+
+
+# 人员类别（读）
+class CategoryTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CategoryType
         exclude = []

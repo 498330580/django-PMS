@@ -25,7 +25,7 @@ from rest_framework.routers import DefaultRouter
 
 from users.views import PersonalInformationList, Login, UserInformationList, GroupList, PermissionList, UserInformationNoneList
 from vue_pms.views import MenuViewset
-from classification.views import Type, DaduiZhongduiTypeList
+from classification.views import Type, DaduiZhongduiTypeList, DiZhiList, CategoryTypeList, DiZhiNotListAll
 
 router = DefaultRouter(trailing_slash=False)
 
@@ -37,6 +37,9 @@ router.register(r'Type', Type, basename='Type')
 router.register(r'GroupList', GroupList, basename='GroupList')
 router.register(r'PermissionList', PermissionList, basename='PermissionList')
 router.register(r'DaduiZhongduiTypeList', DaduiZhongduiTypeList, basename='DaduiZhongduiTypeList')
+router.register(r'DiZhiList', DiZhiList, basename='DiZhiList')
+router.register(r'DiZhiNotListAll', DiZhiNotListAll, basename='DiZhiNotListAll')
+router.register(r'CategoryTypeList', CategoryTypeList, basename='CategoryTypeList')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

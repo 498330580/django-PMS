@@ -183,7 +183,7 @@ class PersonalInformation(models.Model):
     class Meta:
         verbose_name = '个人档案'
         verbose_name_plural = verbose_name
-        ordering = ['dadui']
+        ordering = ['dadui', 'fenzu']
 
     def save(self, *args, **kwargs):
         if self.idnumber:
@@ -216,6 +216,7 @@ class DangTuan(models.Model):
     start = models.DateField(verbose_name='加入时间', help_text='开始时间', null=True, blank=True)
     end = models.DateField(verbose_name='退出时间', help_text='结束时间', null=True, blank=True)
     politics = models.ForeignKey(Politics, verbose_name='政治面貌', help_text='政治面貌', on_delete=models.DO_NOTHING)
+    is_effective = models.BooleanField(default=True, verbose_name='是否有效', help_text='是否有效')
 
     # 创建时间
     create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
@@ -227,7 +228,7 @@ class DangTuan(models.Model):
     class Meta:
         verbose_name = '党团关系'
         verbose_name_plural = verbose_name
-        ordering = ['-start']
+        ordering = ['-start', '-create_time']
 
     def __str__(self):
         return "%s-%s" % (self.name, self.politics)

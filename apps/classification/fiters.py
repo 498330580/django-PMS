@@ -6,11 +6,18 @@
 # @Software: PyCharm
 
 import django_filters
-from classification.models import DaduiZhongduiType
+from classification.models import DaduiZhongduiType, CategoryType
 
 
 class DaduiZhongduiTypeFilter(django_filters.rest_framework.FilterSet):
     class Meta:
         model = DaduiZhongduiType
+        # fields = ['name', 'category', 'entry']
+        fields = ['category_type', 'parent_category']
+
+
+class CategoryTypeFilter(django_filters.rest_framework.FilterSet):
+    class Meta:
+        model = CategoryType
         # fields = ['name', 'category', 'entry']
         fields = ['category_type', 'parent_category']

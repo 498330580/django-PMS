@@ -5,9 +5,10 @@ from django.contrib.auth.models import Group, Permission
 # Create your views here.
 # from rest_framework.generics import get_object_or_404
 
-from users.models import PersonalInformation, UserInformation, Role
+from users.models import PersonalInformation, UserInformation, DangTuan
 from classification.models import DaduiZhongduiType
-from users.serializers import PersonalInformationListSerializer, PersonalInformationSerializer, UserInformationSerializer
+from users.serializers import PersonalInformationListSerializer, PersonalInformationSerializer, \
+    UserInformationSerializer
 from users.serializers import UserInformationNoneSerializer, GroupSerializer, PermissionSerializer
 # from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -74,7 +75,10 @@ class PersonalInformationList(viewsets.ModelViewSet):
 
     # 动态分配serializer
     def get_serializer_class(self):
-        if self.action == "list" or self.action == "retrieve":
+        # is_info = 'info' in self.request.query_params.dict()
+        # if is_info:
+        #     info = self.request.query_params.dict()['info']
+        if self.action == "list":
             return PersonalInformationListSerializer
         else:
             return PersonalInformationSerializer
@@ -82,13 +86,14 @@ class PersonalInformationList(viewsets.ModelViewSet):
     def get_queryset(self):
         """设置列表返回数据"""
         if self.request is not None:
+            # is_age = 'age' in self.request.query_params.dict()
+            PersonalInformation.objects.filter(yonggongs__end__isnull=True)
             username = self.request.user
             if self.request.user.is_superuser:
                 '''允许超级管理员查看全部信息'''
                 return PersonalInformation.objects.filter(is_delete=False)
             else:
                 role_fenzu = DaduiZhongduiType.objects.filter(role__users=username)
-                PersonalInformation.objects.filter()
 
                 if role_fenzu:
                     '''大队、中队、小组权限显示'''
@@ -135,7 +140,9 @@ class PersonalInformationList(viewsets.ModelViewSet):
 
 
 class UserInformationList(viewsets.ModelViewSet):
-    """list：个人账号信息"""
+    """
+    list：个人账号信息
+    """
     queryset = UserInformation.objects.filter(is_superuser=False)
     serializer_class = UserInformationSerializer
     pagination_class = PersonalInformationPagination
