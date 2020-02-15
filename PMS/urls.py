@@ -23,7 +23,8 @@ from rest_framework.routers import DefaultRouter
 # from rest_framework.authtoken import views      # drf登录
 # from rest_framework_jwt.views import obtain_jwt_token   # JWT登录验证
 
-from users.views import PersonalInformationList, Login, UserInformationList, GroupList, PermissionList, UserInformationNoneList
+from users.views import PersonalInformationList, Login, UserInformationList, GroupList, PermissionList, \
+    UserInformationNoneList, Nation
 from vue_pms.views import MenuViewset
 from classification.views import Type, DaduiZhongduiTypeList, DiZhiList, CategoryTypeList, DiZhiNotListAll
 
@@ -40,6 +41,7 @@ router.register(r'DaduiZhongduiTypeList', DaduiZhongduiTypeList, basename='Dadui
 router.register(r'DiZhiList', DiZhiList, basename='DiZhiList')
 router.register(r'DiZhiNotListAll', DiZhiNotListAll, basename='DiZhiNotListAll')
 router.register(r'CategoryTypeList', CategoryTypeList, basename='CategoryTypeList')
+# router.register(r'Nation', Nation, basename='Nation')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -47,8 +49,9 @@ urlpatterns = [
     re_path('docs/', include_docs_urls(title="信息管理系统")),
     re_path('^', include(router.urls)),
     # re_path('^api/v1/PersonalInformationList$', PersonalInformation_list, name='PIL'),
+    re_path('^Nation$', Nation.as_view(), name='Nation'),
     # re_path(r'^login', views.obtain_auth_token),       # drf自带token登录验证
-    re_path(r'^login', Login.as_view()),       # drf自带token登录验证
+    re_path(r'^login', Login.as_view()),  # drf自带token登录验证
     # re_path(r'^login', obtain_jwt_token),      # JWT登录验证
 
 ]

@@ -73,7 +73,7 @@ class YongGongInline(admin.TabularInline):
     """用工信息"""
     model = YongGong
     extra = 0
-    exclude = ['is_delete']
+    exclude = []
 
 
 class LvliInline(admin.TabularInline):

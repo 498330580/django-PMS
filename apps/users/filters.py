@@ -53,4 +53,4 @@ class PersonalInformationFilter(django_filters.rest_framework.FilterSet):
         # fields = ['name', 'category', 'entry']
         fields = ['dadui', 'fenzu', 'sex', 'dangtuans__politics__name', 'yonggongs__zhuangtai__name', 'jiguan__jiguan',
                   'drivinglicense__name', 'bianzhi__name', 'jiediao__name', 'yonggongs__shenfenguilei__name',
-                  'yonggongs__shenfenguileinot__name', 'dangtuannot', ]
+                  'yonggongs__shenfenguileinot__name', 'dangtuannot', 'is_delete']

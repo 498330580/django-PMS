@@ -22,9 +22,9 @@ import django
 django.setup()
 
 from db_tools.data.classification_data import *
-from apps.users.models import *
+from users.models import *
 from django.contrib.auth.models import Group
-from apps.users.admin import GetInformation
+from users.admin import GetInformation
 
 # print('写入人员类别')
 # # 写入人员类别

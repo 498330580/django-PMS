@@ -169,10 +169,8 @@ class PersonalInformation(models.Model):
                                   help_text='家庭经济状态')
     sources = models.ForeignKey(Sources, verbose_name='家庭经济状态，经济来源', on_delete=models.SET_NULL, null=True, blank=True,
                                 help_text='家庭经济状态，经济来源')
-    # zhuangtai = models.CharField(verbose_name='人员状态', max_length=6, choices=(('在岗', '在岗'), ('离职', '离职'), ('调离', '调离')),
-    #                              default='在岗', help_text='人员状态')
 
-    beizhu = models.CharField(default='', verbose_name='备注', max_length=500, help_text='备注')
+    beizhu = models.CharField(default='', verbose_name='备注', max_length=500, help_text='备注', blank=True)
     # 创建时间
     create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     # 最后更新时间
@@ -259,7 +257,7 @@ class YongGong(models.Model):
     post = models.CharField(verbose_name='身份或职务', help_text='身份或职务', max_length=250, default='队员')
     zhuangtai = models.ForeignKey(ZhuangTai, verbose_name='人员状态', on_delete=models.SET_NULL, null=True, blank=True,
                                   help_text='人员状态')
-    remarks = models.CharField(verbose_name='备注', help_text='备注', max_length=250, default='')
+    remarks = models.CharField(verbose_name='备注', help_text='备注', max_length=250, default='', null=True, blank=True)
 
     # 创建时间
     create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
@@ -335,7 +333,8 @@ class Lvli(models.Model):
 
 # 学历信息
 class Education(models.Model):
-    name = models.ForeignKey(PersonalInformation, verbose_name='姓名', on_delete=models.CASCADE, related_name='educations')
+    name = models.ForeignKey(PersonalInformation, verbose_name='姓名', on_delete=models.CASCADE,
+                             related_name='educations')
     school = models.CharField(verbose_name='学校名称', max_length=50)
     xueli = models.ForeignKey(EducationType, verbose_name='学历', on_delete=models.DO_NOTHING)
     academicdegree = models.ForeignKey(AcademicDegreeType, verbose_name='学位', on_delete=models.SET_NULL, null=True,

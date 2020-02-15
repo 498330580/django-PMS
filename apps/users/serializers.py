@@ -44,6 +44,7 @@ class UserInformationSerializer(serializers.ModelSerializer):
         model = UserInformation
         # fields = '__all__'
         exclude = ['password', ]
+        depth = 1
 
 
 # 未分配账户列表
