@@ -1,5 +1,5 @@
 # Create your models here.
-from django.contrib.auth.models import Group
+# from django.contrib.auth.models import Group
 import datetime
 from dateutil.relativedelta import relativedelta
 from classification.models import *
@@ -24,6 +24,65 @@ NATION = (('汉族', '汉族'), ('壮族', '壮族'), ('满族', '满族'), ('�
           ('珞巴族', '珞巴族'))
 
 
+# # 角色模型
+# class Group(G):
+#     ranges_fenzu = models.ManyToManyField(DaduiZhongduiType, verbose_name='权限范围', help_text='角色控制数据的权限范围', blank=True)
+#     # group = models.OneToOneField(Group, verbose_name='用户组', help_text='与角色对应的用户组，控制角色权限', on_delete=models.CASCADE,
+#     #                              null=True, blank=True)
+#     # users = models.ManyToManyField(UserInformation,
+#     #                                related_name='users_role',
+#     #                                verbose_name='用户',
+#     #                                help_text='用户角色，控制用户访问与数据修改权限', blank=True)
+#     # ranges_dadui = models.ManyToManyField(DaDuiType, verbose_name='权限大队', help_text='可以访问的数据范围：大队', blank=True)
+#     # ranges_zhongdui = models.ManyToManyField(ZhongDuiType, verbose_name='权限中队（小组）',
+#     #                                          help_text='可以访问的数据范围：中队（小组），要选择此项必须选择大队选项',
+#     #                                          blank=True)
+#
+#     # 创建时间
+#     create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+#     # 最后更新时间
+#     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
+#     # 是否删除
+#     is_delete = models.BooleanField(default=False, verbose_name='是否删除')
+#
+#     class Meta:
+#         verbose_name = '角色'
+#         verbose_name_plural = verbose_name
+#
+#     def __str__(self):
+#         return self.name
+
+
+# # 角色模型
+# class Role(models.Model):
+#     name = models.CharField(max_length=25, verbose_name='角色名称', help_text='角色名称')
+#     ranges_fenzu = models.ManyToManyField(DaduiZhongduiType, verbose_name='权限范围', help_text='角色控制数据的权限范围', blank=True)
+#     group = models.OneToOneField(Group, verbose_name='用户组', help_text='与角色对应的用户组，控制角色权限', on_delete=models.CASCADE,
+#                                  null=True, blank=True)
+#     # users = models.ManyToManyField(UserInformation,
+#     #                                related_name='users_role',
+#     #                                verbose_name='用户',
+#     #                                help_text='用户角色，控制用户访问与数据修改权限', blank=True)
+#     # ranges_dadui = models.ManyToManyField(DaDuiType, verbose_name='权限大队', help_text='可以访问的数据范围：大队', blank=True)
+#     # ranges_zhongdui = models.ManyToManyField(ZhongDuiType, verbose_name='权限中队（小组）',
+#     #                                          help_text='可以访问的数据范围：中队（小组），要选择此项必须选择大队选项',
+#     #                                          blank=True)
+#
+#     # 创建时间
+#     create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+#     # 最后更新时间
+#     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
+#     # 是否删除
+#     is_delete = models.BooleanField(default=False, verbose_name='是否删除')
+#
+#     class Meta:
+#         verbose_name = '角色'
+#         verbose_name_plural = verbose_name
+#
+#     def __str__(self):
+#         return self.name
+
+
 # 用户模型.
 class UserInformation(AbstractUser):
     # avatar = models.ImageField(upload_to='avatar/%Y/%m',
@@ -31,8 +90,19 @@ class UserInformation(AbstractUser):
     #                            max_length=200, blank=True,
     #                            null=True,
     #                            verbose_name='用户头像')
-    qq = models.CharField(max_length=20, blank=True, null=True, verbose_name='QQ号码')
-    wx = models.CharField(max_length=50, blank=True, null=True, verbose_name='微信号码')
+    # qq = models.CharField(max_length=20, blank=True, null=True, verbose_name='QQ号码')
+    # wx = models.CharField(max_length=50, blank=True, null=True, verbose_name='微信号码')
+    # role = models.ManyToManyField(Group, verbose_name='角色', help_text='角色权限', blank=True)
+    fenzu = models.ManyToManyField(DaduiZhongduiType, verbose_name='权限范围', help_text='角色控制数据的权限范围', blank=True)
+
+    # groups = models.ManyToManyField(
+    #     Group,
+    #     verbose_name='角色',
+    #     blank=True,
+    #     help_text='角色权限',
+    #     related_name="user_set",
+    #     related_query_name="user",
+    # )
 
     class Meta:
         verbose_name = '用户信息'
@@ -46,20 +116,20 @@ class UserInformation(AbstractUser):
             return self.username
 
 
-# 角色模型
-class Role(models.Model):
-    name = models.CharField(max_length=25, verbose_name='角色名称', help_text='角色名称')
-    ranges_fenzu = models.ManyToManyField(DaduiZhongduiType, verbose_name='权限范围', help_text='角色控制数据的权限范围', blank=True)
-    group = models.OneToOneField(Group, verbose_name='用户组', help_text='与角色对应的用户组，控制角色权限', on_delete=models.CASCADE,
-                                 null=True, blank=True)
-    users = models.ManyToManyField(UserInformation,
-                                   related_name='users_role',
-                                   verbose_name='用户',
-                                   help_text='用户角色，控制用户访问与数据修改权限', blank=True)
-    # ranges_dadui = models.ManyToManyField(DaDuiType, verbose_name='权限大队', help_text='可以访问的数据范围：大队', blank=True)
-    # ranges_zhongdui = models.ManyToManyField(ZhongDuiType, verbose_name='权限中队（小组）',
-    #                                          help_text='可以访问的数据范围：中队（小组），要选择此项必须选择大队选项',
-    #                                          blank=True)
+img_type = (('登记照', '登记照'), ('党团材料', '党团材料'))
+
+
+# 档案图片
+class ImgData(models.Model):
+    user = models.ForeignKey(UserInformation, verbose_name='上传人', on_delete=models.SET_NULL, null=True, blank=True)
+    img_data = models.ImageField(upload_to='avatar/personal/%Y/%m/%d',
+                                 default='avatar/default.jpg',
+                                 max_length=200, blank=True,
+                                 null=True,
+                                 verbose_name='档案图片')
+    type = models.CharField(max_length=10, verbose_name='图片类型',
+                            help_text='图片类型', default='',
+                            choices=img_type)
 
     # 创建时间
     create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
@@ -69,32 +139,18 @@ class Role(models.Model):
     is_delete = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
-        verbose_name = '角色'
+        verbose_name = '档案图片'
         verbose_name_plural = verbose_name
 
-    def save(self, *args, **kwargs):
-        if self.name and not Group.objects.filter(name=self.name) and not self.group:
-            """用户组不存在，未填写用户组"""
-            group = Group.objects.create(name=self.name)
-            self.group = group
-        elif self.name and Group.objects.filter(name=self.name) and not self.group:
-            """用户组存在，未填写用户组"""
-            group = Group.objects.get(name=self.name)
-            self.group = group
-        elif self.name and not Group.objects.filter(name=self.name) and self.group:
-            """用户组未存在， 已填写用户组"""
-            self.group.name = self.name
-            self.group.save()
-        super().save(*args, **kwargs)
-
     def __str__(self):
-        return self.name
+        return "%s-%s" % (self.user, self.type)
 
 
 # 人员档案
 class PersonalInformation(models.Model):
     user = models.OneToOneField(UserInformation, verbose_name='用户', on_delete=models.CASCADE,
                                 help_text='关联的账号，一对一关联，必须唯一')
+    personal_avatar = models.OneToOneField(ImgData, verbose_name='登记照', on_delete=models.SET_NULL, null=True, blank=True)
     idfj = models.CharField(max_length=10, verbose_name='辅警编号', help_text='辅警编号', default='未分配')
     name = models.CharField(max_length=10, verbose_name='姓名', help_text='姓名', db_index=True)
     named = models.CharField(max_length=10, verbose_name='曾用名', default='无', help_text='曾用名')
@@ -393,10 +449,7 @@ class HomeInformation(models.Model):
     xueli = models.ForeignKey(EducationType, verbose_name='学历', on_delete=models.DO_NOTHING)
     idnumber = models.CharField(max_length=18, verbose_name="身份证", help_text="如果最后一位为X请大写", unique=True, db_index=True)
     birthday = models.DateField(verbose_name='出生日期', null=True, blank=True, help_text='系统自动生成')
-    politics = models.CharField(max_length=10,
-                                choices=(("群众", "群众"), ("中共党员", "中共党员"), ("中共党员", "中共党员"),),
-                                verbose_name='政治面貌',
-                                default="群众")
+    politics = models.ForeignKey(Politics, verbose_name='政治面貌', on_delete=models.DO_NOTHING)
     mobile = models.CharField(max_length=11, unique=True, verbose_name='手机号码')
     shenfenguilei = models.ForeignKey(ShenFenGuiLei, verbose_name='身份归类', on_delete=models.DO_NOTHING)
     renyuanxianzhuang = models.ForeignKey(RenYuanXianZhuang, verbose_name='人员现状', on_delete=models.DO_NOTHING)

@@ -8,7 +8,7 @@
 from django.contrib.auth.models import Group, Permission
 
 from rest_framework import serializers
-from users.models import PersonalInformation, UserInformation, DangTuan, YongGong, Education
+from users.models import *
 
 
 # 学历信息（读）
@@ -20,13 +20,29 @@ class EducationSerializer(serializers.ModelSerializer):
         depth = 1
 
 
+# 学历信息（All）
+class EducationAllSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Education
+        exclude = []
+
+
 # 党团列表（读）
 class DangTuanSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DangTuan
-        exclude = ['name']
+        exclude = []
         depth = 1
+
+
+# 党团列表（读、改、写、删）
+class DangTuanAllSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = DangTuan
+        exclude = []
 
 
 # 用工信息（读）
@@ -36,6 +52,54 @@ class YongGongSerializer(serializers.ModelSerializer):
         model = YongGong
         exclude = ['name']
         depth = 1
+
+
+# 用工信息（读、改、写、删）
+class YongGongAllSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = YongGong
+        exclude = []
+
+
+# 履历信息（读）
+class LvLiSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Lvli
+        exclude = []
+
+
+# 车辆信息（读）
+class CarSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Car
+        exclude = []
+
+
+# 家庭信息（读）
+class HomeInformationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = HomeInformation
+        exclude = []
+
+
+# 个人体检信息（读）
+class PhysicalExaminationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PhysicalExamination
+        exclude = []
+
+
+# 个人量体信息（读）
+class MeasureInformationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = MeasureInformation
+        exclude = []
 
 
 # 账户列表
@@ -78,12 +142,13 @@ class PersonalInformationListSerializer(serializers.ModelSerializer):
         depth = 1
 
 
-# 用户组列表
+# 用户组列表(读)
 class GroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Group
         exclude = []
+        depth = 1
 
 
 # 个人权限列表
@@ -91,4 +156,12 @@ class PermissionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Permission
+        exclude = []
+
+
+# 档案图片
+class ImgDataSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ImgData
         exclude = []

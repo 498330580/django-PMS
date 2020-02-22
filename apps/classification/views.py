@@ -73,9 +73,11 @@ class Type(ObjectMultipleModelAPIViewSet):
         {'queryset': ChengWei.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
         {'queryset': TiJianJieGuo.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
         {'queryset': Politics.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
+        {'queryset': ChengWei.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
         {'queryset': ZhuangTai.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
         {'queryset': PermanentType.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
         {'queryset': Marriage.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
+        {'queryset': YongGongType.objects.filter(is_delete=False), 'serializer_class': TypeSerializer},
         {'queryset': DaduiZhongduiType.objects.filter(is_delete=False), 'serializer_class': DaduiZhongduiTypeSerializer},
         {'queryset': Year.objects.filter(is_delete=False), 'serializer_class': YearSerializer},
     ]

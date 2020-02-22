@@ -3,9 +3,9 @@ __author__ = 'bobby'
 
 import django_filters
 # from django.db.models import Q
-from rest_framework.response import Response
+# from rest_framework.response import Response
 
-from users.models import PersonalInformation
+from users.models import *
 
 
 class PersonalInformationFilter(django_filters.rest_framework.FilterSet):
@@ -54,3 +54,58 @@ class PersonalInformationFilter(django_filters.rest_framework.FilterSet):
         fields = ['dadui', 'fenzu', 'sex', 'dangtuans__politics__name', 'yonggongs__zhuangtai__name', 'jiguan__jiguan',
                   'drivinglicense__name', 'bianzhi__name', 'jiediao__name', 'yonggongs__shenfenguilei__name',
                   'yonggongs__shenfenguileinot__name', 'dangtuannot', 'is_delete']
+
+
+class DangTuanFilter(django_filters.rest_framework.FilterSet):
+    class Meta:
+        model = DangTuan
+        fields = ['name', ]
+
+
+class YongGongFilter(django_filters.rest_framework.FilterSet):
+    class Meta:
+        model = YongGong
+        fields = ['name', ]
+
+
+class LvLiFilter(django_filters.rest_framework.FilterSet):
+    class Meta:
+        model = Lvli
+        fields = ['name', ]
+
+
+class EducationFilter(django_filters.rest_framework.FilterSet):
+    class Meta:
+        model = Education
+        fields = ['name', ]
+
+
+class CarFilter(django_filters.rest_framework.FilterSet):
+    class Meta:
+        model = Car
+        fields = ['name', ]
+
+
+class HomeInformationFilter(django_filters.rest_framework.FilterSet):
+    class Meta:
+        model = HomeInformation
+        fields = ['name', ]
+
+
+class PhysicalExaminationFilter(django_filters.rest_framework.FilterSet):
+    class Meta:
+        model = PhysicalExamination
+        fields = ['name', ]
+
+
+class MeasureInformationFilter(django_filters.rest_framework.FilterSet):
+    class Meta:
+        model = MeasureInformation
+        fields = ['name', ]
+
+
+# 档案图片
+class ImgDataFilter(django_filters.rest_framework.FilterSet):
+    class Meta:
+        model = ImgData
+        fields = ['user', ]

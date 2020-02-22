@@ -1,11 +1,9 @@
-from django.views.generic.base import View
+# from django.views.generic.base import View
 
 from users.models import *
 from django.apps import apps
-from classification.models import DaduiZhongduiType
-from users.serializers import PersonalInformationListSerializer, PersonalInformationSerializer, \
-    UserInformationSerializer
-from users.serializers import UserInformationNoneSerializer, GroupSerializer, PermissionSerializer
+# from classification.models import DaduiZhongduiType
+from users.serializers import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -22,9 +20,10 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.status import HTTP_200_OK
 
-from .filters import PersonalInformationFilter
+from .filters import *
 
 
+# 个人信息自定义分页器
 class PersonalInformationPagination(PageNumberPagination):
     """
     自定义分页器
@@ -32,9 +31,10 @@ class PersonalInformationPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
     page_query_param = 'p'
-    max_page_size = 100
+    max_page_size = 1000
 
 
+# 个人信息
 class PersonalInformationList(viewsets.ModelViewSet):
     """
     list:个人信息列表页.
@@ -86,7 +86,10 @@ class PersonalInformationList(viewsets.ModelViewSet):
                 '''允许超级管理员/可登录后台用户查看全部信息查看全部信息'''
                 return PersonalInformation.objects.all()
             else:
-                role_fenzu = DaduiZhongduiType.objects.filter(role__users=username)
+                # role_fenzu = DaduiZhongduiType.objects.filter(role__users=username)
+                # role_fenzu = DaduiZhongduiType.objects.filter(role__user__username=username.username)
+                role_fenzu = self.request.user.fenzu.all()
+
                 if role_fenzu:
                     '''大队、中队、小组权限显示'''
                     PersonalInformation.objects.filter()
@@ -228,6 +231,7 @@ def permission_verify(user, keys, remove=None):
     return permission_dic
 
 
+# 个人账户信息
 class UserInformationList(viewsets.ModelViewSet):
     """
     list：个人账号信息
@@ -246,7 +250,10 @@ class UserInformationList(viewsets.ModelViewSet):
                 '''允许超级管理员查看全部信息'''
                 return UserInformation.objects.all()
             else:
-                role_fenzu = DaduiZhongduiType.objects.filter(role__users=username)
+                # role_fenzu = DaduiZhongduiType.objects.filter(role__users=username)
+                # role_fenzu = DaduiZhongduiType.objects.filter(role__user__username=username.username)
+                # role_fenzu = self.request.user.groups.all()
+                role_fenzu = self.request.user.fenzu.all()
 
                 if role_fenzu:
                     '''大队、中队、小组权限显示'''
@@ -261,12 +268,13 @@ class UserInformationList(viewsets.ModelViewSet):
         if 'permission' in self.request.query_params:
             permission = self.request.query_params['permission']
             if permission == 'users':
-                return Response(permission_verify(instance, 'users', '角色'))
+                return Response(permission_verify(instance, 'users'))
 
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
 
+# 个人账户信息（未关联账户）
 class UserInformationNoneList(viewsets.GenericViewSet, mixins.ListModelMixin):
     """
     list:未分配用户账号
@@ -277,6 +285,7 @@ class UserInformationNoneList(viewsets.GenericViewSet, mixins.ListModelMixin):
     permission_classes = (IsAuthenticated, DjangoModelPermissions)
 
 
+# 用户组
 class GroupList(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
         list:用户组
@@ -287,6 +296,7 @@ class GroupList(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated, DjangoModelPermissions)
 
 
+# 所有权限
 class PermissionList(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
      list:权限列表
@@ -295,6 +305,7 @@ class PermissionList(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = PermissionSerializer
 
 
+# 登录接口
 class Login(ObtainAuthToken):
     """修改登录返回格式"""
 
@@ -312,6 +323,7 @@ class Login(ObtainAuthToken):
                          })
 
 
+# 民族列表
 class Nation(APIView):
     """
     list:民族列表
@@ -336,3 +348,176 @@ class Nation(APIView):
         """
         nationdata = [{'name': nation[0], 'value': nation[1]} for nation in NATION]
         return Response(nationdata)
+
+
+# 党团关系
+class DangTuanList(viewsets.ModelViewSet):
+    """
+    list:党团关系
+    """
+    queryset = DangTuan.objects.filter(is_delete=False)
+    serializer_class = DangTuanAllSerializer
+    authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
+    permission_classes = (IsAuthenticated, DjangoModelPermissions)
+
+    filter_backends = [DjangoFilterBackend,  # django_filters过滤
+                       ]
+
+    filter_class = DangTuanFilter
+
+    # # 动态分配serializer
+    # def get_serializer_class(self):
+    #     if self.action == 'list':
+    #         return DangTuanSerializer
+    #     else:
+    #         return DangTuanAllSerializer
+
+
+# 用工信息
+class YongGongList(viewsets.ModelViewSet):
+    """
+    list:用工信息
+    """
+    queryset = YongGong.objects.filter(is_delete=False)
+    serializer_class = YongGongAllSerializer
+    authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
+    permission_classes = (IsAuthenticated, DjangoModelPermissions)
+
+    filter_backends = [DjangoFilterBackend,  # django_filters过滤
+                       ]
+
+    filter_class = YongGongFilter
+
+
+# 履历信息
+class LvLiList(viewsets.ModelViewSet):
+    """
+    list:履历信息
+    """
+    queryset = Lvli.objects.filter(is_delete=False)
+    serializer_class = LvLiSerializer
+    authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
+    permission_classes = (IsAuthenticated, DjangoModelPermissions)
+
+    filter_backends = [DjangoFilterBackend,  # django_filters过滤
+                       ]
+
+    filter_class = LvLiFilter
+
+
+# 学历信息
+class EducationList(viewsets.ModelViewSet):
+    """
+    list:学历信息
+    """
+    queryset = Education.objects.filter(is_delete=False)
+    serializer_class = EducationAllSerializer
+    authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
+    permission_classes = (IsAuthenticated, DjangoModelPermissions)
+
+    filter_backends = [DjangoFilterBackend,  # django_filters过滤
+                       ]
+
+    filter_class = EducationFilter
+
+
+# 车辆信息
+class CarList(viewsets.GenericViewSet, mixins.ListModelMixin):
+    """
+    list:车辆信息
+    """
+    queryset = Car.objects.filter(is_delete=False)
+    serializer_class = CarSerializer
+    authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
+    permission_classes = (IsAuthenticated, DjangoModelPermissions)
+
+    filter_backends = [DjangoFilterBackend,  # django_filters过滤
+                       ]
+
+    filter_class = CarFilter
+
+
+# 家庭成员信息
+class HomeInformationList(viewsets.ModelViewSet):
+    """
+    list:家庭成员信息
+    """
+    queryset = HomeInformation.objects.filter(is_delete=False)
+    serializer_class = HomeInformationSerializer
+    authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
+    permission_classes = (IsAuthenticated, DjangoModelPermissions)
+
+    filter_backends = [DjangoFilterBackend,  # django_filters过滤
+                       ]
+
+    filter_class = HomeInformationFilter
+
+
+# 个人体检信息
+class PhysicalExaminationList(viewsets.GenericViewSet, mixins.ListModelMixin):
+    """
+    list:个人体检信息
+    """
+    queryset = PhysicalExamination.objects.filter(is_delete=False)
+    serializer_class = PhysicalExaminationSerializer
+    authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
+    permission_classes = (IsAuthenticated, DjangoModelPermissions)
+
+    filter_backends = [DjangoFilterBackend,  # django_filters过滤
+                       ]
+
+    filter_class = PhysicalExaminationFilter
+
+
+# 个人量体信息
+class MeasureInformationList(viewsets.ModelViewSet):
+    """
+    list:个人量体信息
+    """
+    queryset = MeasureInformation.objects.filter(is_delete=False)
+    serializer_class = MeasureInformationSerializer
+    authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
+    permission_classes = (IsAuthenticated, DjangoModelPermissions)
+
+    filter_backends = [DjangoFilterBackend,  # django_filters过滤
+                       ]
+
+    filter_class = MeasureInformationFilter
+
+
+# 验证值是否属于集合当中
+def jiheyanzheng(data, jihe):
+    datalist = []
+    for i in jihe:
+        datalist.append(i[0])
+    if data in datalist:
+        return True
+    else:
+        return False
+
+
+# 档案图片
+class ImgDataList(viewsets.ModelViewSet):
+    """
+    list:档案图片
+    """
+    queryset = ImgData.objects.filter(is_delete=False)
+    serializer_class = ImgDataSerializer
+    authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
+    permission_classes = (IsAuthenticated, DjangoModelPermissions)
+
+    filter_backends = [DjangoFilterBackend,  # django_filters过滤
+                       ]
+
+    filter_class = ImgDataFilter
+
+    def create(self, request, *args, **kwargs):
+        user = self.request.user
+
+        request.data['user'] = user.id
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

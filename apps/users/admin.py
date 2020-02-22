@@ -1,9 +1,8 @@
 from django.contrib import admin
 
 # Register your models here.
-
-from users.models import Role, UserInformation, PersonalInformation, Education, Car, DangTuan, YongGong, Lvli, \
-    HomeInformation, PhysicalExamination, MeasureInformation
+# from users.models import Group as R
+from users.models import *
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy
 from django.contrib.auth.models import Group
@@ -32,10 +31,12 @@ class UserInformationAdmin(UserAdmin):
 
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        (gettext_lazy('详细信息'), {'fields': ('last_name', 'first_name', 'email', 'qq', 'wx')}),
-        (gettext_lazy('权限'), {'fields': ('is_superuser', 'is_staff', 'is_active', 'groups', 'user_permissions')}),
+        (gettext_lazy('详细信息'), {'fields': ('last_name', 'first_name', 'email')}),
+        (gettext_lazy('权限'), {'fields': ('is_superuser', 'is_staff', 'is_active', 'groups', 'user_permissions', 'fenzu')}),
         (gettext_lazy('账户记录'), {'fields': ('last_login', 'date_joined')}),
     )
+
+    filter_horizontal = ['groups', 'user_permissions', 'fenzu']
 
     # 判断用户组，后台显示内容
     def get_queryset(self, request):
@@ -208,7 +209,8 @@ class PersonalinformationAdmin(admin.ModelAdmin):
 
     fieldsets = (
         (gettext_lazy('个人信息'), {'fields': (
-            'user', 'name', 'named', 'nation', 'mobile', 'permanenttype', 'idnumber', 'sex', 'birthday', 'jiguan',
+            'user', 'personal_avatar', 'name', 'named', 'nation', 'mobile', 'permanenttype', 'idnumber', 'sex',
+            'birthday', 'jiguan',
             'zodiac', 'constellation', 'permanent', 'home', 'hobby', 'drivinglicense',
             'marriage')}),
         (gettext_lazy('职务信息'), {'fields': (('dadui', 'fenzu'),
@@ -278,10 +280,10 @@ class PersonalinformationAdmin(admin.ModelAdmin):
                 return fields
 
 
-class RoleAdmin(admin.ModelAdmin):
-    filter_horizontal = ['users', 'ranges_fenzu']
+# class RoleAdmin(admin.ModelAdmin):
+#     filter_horizontal = ['ranges_fenzu']
 
 
-admin.site.register(Role, RoleAdmin)
+admin.site.register(ImgData)
 admin.site.register(UserInformation, UserInformationAdmin)
 admin.site.register(PersonalInformation, PersonalinformationAdmin)
