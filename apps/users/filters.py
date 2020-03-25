@@ -2,6 +2,7 @@
 __author__ = 'bobby'
 
 import django_filters
+from rest_framework import filters
 # from django.db.models import Q
 # from rest_framework.response import Response
 
@@ -27,16 +28,37 @@ class PersonalInformationFilter(django_filters.rest_framework.FilterSet):
     #         category__parent_category__parent_category_id=value))
     yonggongs__shenfenguileinot__name = django_filters.CharFilter(method='zhuangtainot_filter')
     dangtuannot = django_filters.CharFilter(method='dangtuannot_filter')
+    Educationname = django_filters.CharFilter(method='Educationname_filter')
     # all = django_filters.CharFilter(method='all_filter')
 
     def zhuangtainot_filter(self, queryset, name, value):
-        if value == '协勤队员':
-            return queryset.filter(yonggongs__shenfenguilei__name=value).exclude(yonggongs__zhuangtai__name='转辅')
-        else:
-            return queryset.filter(yonggongs__shenfenguilei__name=value)
+        datalist = []
+        data = queryset.filter(yonggongs__shenfenguilei__name=value)
+        for i in data:
+            if i.yonggongs.all()[0].shenfenguilei.name == value:
+                datalist.append(i.id)
+        return queryset.filter(id__in=datalist)
+        # if value == '协勤队员':
+        #     return queryset.filter(yonggongs__shenfenguilei__name=value).exclude(yonggongs__zhuangtai__name='转辅')
+        # else:
+        #     return queryset.filter(yonggongs__shenfenguilei__name=value)
 
     def dangtuannot_filter(self, queryset, name, value):
-        return queryset.filter(dangtuans__politics__name=value, dangtuans__is_effective=True)
+        datalist = []
+        data = queryset.filter(dangtuans__politics__name=value)
+        for i in data:
+            if i.dangtuans.all()[0].politics.name == value:
+                datalist.append(i.id)
+        # return queryset.filter(dangtuans__politics__name=value, dangtuans__is_effective=True)
+        return queryset.filter(id__in=datalist)
+
+    def Educationname_filter(self, queryset, name, value):
+        datalist = []
+        data = queryset.filter(educations__xueli__name=value)
+        for i in data:
+            if i.dangtuans.all()[0].xueli.name == value:
+                datalist.append(i.id)
+        return queryset.filter(id__in=datalist)
 
     # def all_filter(self, queryset, name, value):
     #     data = queryset.filter(name=value)
@@ -53,7 +75,7 @@ class PersonalInformationFilter(django_filters.rest_framework.FilterSet):
         # fields = ['name', 'category', 'entry']
         fields = ['dadui', 'fenzu', 'sex', 'dangtuans__politics__name', 'yonggongs__zhuangtai__name', 'jiguan__jiguan',
                   'drivinglicense__name', 'bianzhi__name', 'jiediao__name', 'yonggongs__shenfenguilei__name',
-                  'yonggongs__shenfenguileinot__name', 'dangtuannot', 'is_delete']
+                  'yonggongs__shenfenguileinot__name', 'dangtuannot', 'is_delete', 'Educationname']
 
 
 class DangTuanFilter(django_filters.rest_framework.FilterSet):
@@ -109,3 +131,4 @@ class ImgDataFilter(django_filters.rest_framework.FilterSet):
     class Meta:
         model = ImgData
         fields = ['user', ]
+

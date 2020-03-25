@@ -24,6 +24,7 @@ NATION = (('汉族', '汉族'), ('壮族', '壮族'), ('满族', '满族'), ('�
           ('珞巴族', '珞巴族'))
 
 
+'''
 # # 角色模型
 # class Group(G):
 #     ranges_fenzu = models.ManyToManyField(DaduiZhongduiType, verbose_name='权限范围', help_text='角色控制数据的权限范围', blank=True)
@@ -81,6 +82,7 @@ NATION = (('汉族', '汉族'), ('壮族', '壮族'), ('满族', '满族'), ('�
 #
 #     def __str__(self):
 #         return self.name
+'''
 
 
 # 用户模型.
@@ -270,7 +272,7 @@ class DangTuan(models.Model):
     start = models.DateField(verbose_name='加入时间', help_text='开始时间', null=True, blank=True)
     end = models.DateField(verbose_name='退出时间', help_text='结束时间', null=True, blank=True)
     politics = models.ForeignKey(Politics, verbose_name='政治面貌', help_text='政治面貌', on_delete=models.DO_NOTHING)
-    is_effective = models.BooleanField(default=True, verbose_name='是否有效', help_text='是否有效')
+    # is_effective = models.BooleanField(default=True, verbose_name='是否有效', help_text='是否有效')
 
     # 创建时间
     create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
@@ -421,7 +423,7 @@ class Education(models.Model):
 
 # 车辆信息
 class Car(models.Model):
-    name = models.ForeignKey(PersonalInformation, verbose_name='姓名', on_delete=models.CASCADE)
+    name = models.ForeignKey(PersonalInformation, verbose_name='姓名', on_delete=models.CASCADE, related_name='car')
     vehicle = models.CharField(verbose_name='车牌号', unique=True, max_length=10, default="无", db_index=True)
     vehiclecategory = models.ForeignKey(CarType, verbose_name='车辆类别', on_delete=models.DO_NOTHING)
 
@@ -478,7 +480,7 @@ class HomeInformation(models.Model):
 
 # 个人体检信息
 class PhysicalExamination(models.Model):
-    name = models.ForeignKey(PersonalInformation, verbose_name='姓名', on_delete=models.CASCADE)
+    name = models.ForeignKey(PersonalInformation, verbose_name='姓名', on_delete=models.CASCADE, related_name='tj')
     year = models.ForeignKey(Year, verbose_name='体检年份', on_delete=models.DO_NOTHING)
     result = models.ForeignKey(TiJianJieGuo, verbose_name='结果', on_delete=models.DO_NOTHING)
     information = models.TextField(verbose_name='体检结论')
@@ -500,7 +502,7 @@ class PhysicalExamination(models.Model):
 
 # 个人量体信息
 class MeasureInformation(models.Model):
-    name = models.ForeignKey(PersonalInformation, verbose_name='姓名', on_delete=models.CASCADE)
+    name = models.ForeignKey(PersonalInformation, verbose_name='姓名', on_delete=models.CASCADE, related_name='lt')
     year = models.ForeignKey(Year, verbose_name='测量年份', on_delete=models.DO_NOTHING)
     shengao = models.FloatField(verbose_name='身高（CM）')
     tizhong = models.FloatField(verbose_name='体重（KG）')

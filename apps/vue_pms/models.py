@@ -41,10 +41,14 @@ class WebsiteConfig(models.Model):
     name = models.CharField(default="", max_length=30, verbose_name='网站名称', help_text='设置网站的名称')
     logo = models.ImageField(upload_to='WebsiteConfig/%Y/%m/%d/', default='WebsiteConfig/logo.png', max_length=250,
                              verbose_name='网站LOGO')
+    is_look = models.BooleanField(default=False, verbose_name="是否有效", help_text="是否有效")
+    add_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
 
     class Meta:
         verbose_name = "前端网站设置"
         verbose_name_plural = verbose_name
+        ordering = ['-add_time']
 
     def __str__(self):
         return self.name

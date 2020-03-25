@@ -25,6 +25,7 @@ from db_tools.data.classification_data import *
 from users.models import *
 from django.contrib.auth.models import Group
 from users.admin import GetInformation
+from vue_pms.models import *
 
 # print('写入人员类别')
 # # 写入人员类别
@@ -211,7 +212,7 @@ for Car_tmp in CarType_data:
         car.introduce = Car_tmp['introduce']
         car.index = Car_tmp['index']
         car.save()
-
+'''
 # # 写入岗位类别
 # for Post in PostType_data:
 #     if not PostType.objects.filter(name=Post['name']):
@@ -229,7 +230,7 @@ for Car_tmp in CarType_data:
 #         post.introduce = Post['introduce']
 #         post.index = Post['index']
 #         post.save()
-
+'''
 # 写入学历说明
 for data in XueLiInformation_data:
     if not XueLiInformation.objects.filter(name=data['name']):
@@ -994,3 +995,65 @@ for index, row in data.iterrows():
                     personalinformation.fenzu = DaduiZhongduiType.objects.get(name=row['所属大队'])
                 personalinformation.save()
 print("写入数据结束")
+
+# 网站设置
+print("开始写入网站设置数据")
+config = WebsiteConfig()
+config.name = '特警支队辅警信息管理系统'
+config.is_look = True
+config.save()
+print("结束写入网站设置数据")
+
+print("开始写入菜单数据")
+data = [{'name': '首页', 'path': 'welcome', 'desc': '首页', 'index': 100, 'category_type': 1, 'class_img': 'el-icon-s-home',
+         'is_look': True, '二级目录': []},
+        {'name': '个人信息', 'path': 'welcome', 'desc': '个人信息', 'index': 200, 'category_type': 1,
+         'class_img': 'el-icon-user-solid',
+         'is_look': True, '二级目录': [
+            {'name': '账号信息', 'path': 'user', 'desc': '账号信息', 'index': 201, 'category_type': 2,
+             'class_img': 'el-icon-user',
+             'is_look': True, '三级目录': []},
+            {'name': '档案信息', 'path': 'username', 'desc': '档案信息', 'index': 202, 'category_type': 2,
+             'class_img': 'el-icon-s-order',
+             'is_look': True, '三级目录': []}
+         ]
+         },
+        {'name': '网站设置', 'path': 'welcome', 'desc': '网站设置', 'index': 300, 'category_type': 1,
+         'class_img': 'el-icon-s-tools',
+         'is_look': True, '二级目录': [
+            {'name': '角色管理', 'path': 'Group', 'desc': '角色管理', 'index': 301, 'category_type': 2,
+             'class_img': 'el-icon-user',
+             'is_look': True, '三级目录': []},
+            {'name': '权限列表', 'path': 'Permission', 'desc': '权限列表', 'index': 302, 'category_type': 2,
+             'class_img': 'el-icon-tickets',
+             'is_look': True, '三级目录': []}
+         ]
+         },
+        {'name': '网站设置', 'path': 'welcome', 'desc': '网站设置', 'index': 1000, 'category_type': 1,
+         'class_img': 'el-icon-s-tools',
+         'is_look': True, '二级目录': []
+         },
+        ]
+for one in data:
+    menu1 = Menu()
+    menu1.name = one['name']
+    menu1.path = one['path']
+    menu1.desc = one['desc']
+    menu1.index = one['index']
+    menu1.category_type = one['category_type']
+    menu1.class_img = one['class_img']
+    menu1.is_look = one['is_look']
+    menu1.save()
+    if one['二级目录']:
+        for two in one['二级目录']:
+            menu2 = Menu()
+            menu2.name = two['name']
+            menu2.path = two['path']
+            menu2.desc = two['desc']
+            menu2.index = two['index']
+            menu2.category_type = two['category_type']
+            menu2.class_img = two['class_img']
+            menu2.is_look = two['is_look']
+            menu2.parent_category = menu1
+            menu2.save()
+print("结束写入菜单数据")

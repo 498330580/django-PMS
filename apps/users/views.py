@@ -7,6 +7,7 @@ from users.serializers import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+from django.apps import apps
 from django.contrib.auth.models import Group, Permission
 from rest_framework import mixins, status
 from rest_framework.pagination import PageNumberPagination
@@ -31,7 +32,7 @@ class PersonalInformationPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
     page_query_param = 'p'
-    max_page_size = 1000
+    max_page_size = 300
 
 
 # 个人信息
@@ -80,19 +81,16 @@ class PersonalInformationList(viewsets.ModelViewSet):
     def get_queryset(self):
         """设置列表返回数据"""
         if self.request is not None and self.request.user.has_perm('users.view_personalinformation'):
-            PersonalInformation.objects.filter(yonggongs__end__isnull=True)
+            # PersonalInformation.objects.filter(yonggongs__end__isnull=True)
             username = self.request.user
             if self.request.user.is_superuser or self.request.user.is_staff:
                 '''允许超级管理员/可登录后台用户查看全部信息查看全部信息'''
                 return PersonalInformation.objects.all()
             else:
-                # role_fenzu = DaduiZhongduiType.objects.filter(role__users=username)
-                # role_fenzu = DaduiZhongduiType.objects.filter(role__user__username=username.username)
                 role_fenzu = self.request.user.fenzu.all()
 
                 if role_fenzu:
                     '''大队、中队、小组权限显示'''
-                    PersonalInformation.objects.filter()
                     return PersonalInformation.objects.filter(is_delete=False, fenzu__in=role_fenzu)
                 else:
                     '''权限范围到个人，只有本账号访问权限'''
@@ -190,15 +188,6 @@ class PersonalInformationList(viewsets.ModelViewSet):
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
-        # if request.user.is_superuser and False:
-        #     if UserInformation.objects.get(personalinformation=instance).delete():
-        #         return Response(status=status.HTTP_204_NO_CONTENT)
-        #     else:
-        #         return Response(status=status.HTTP_400_BAD_REQUEST)
-        # else:
-        #     # self.perform_destroy(instance)
-        #     return Response(status=status.HTTP_204_NO_CONTENT)
-
 
 # 权限验证
 def permission_verify(user, keys, remove=None):
@@ -236,11 +225,16 @@ class UserInformationList(viewsets.ModelViewSet):
     """
     list：个人账号信息
     """
-    # queryset = UserInformation.objects.filter(is_superuser=False)
     serializer_class = UserInformationSerializer
     pagination_class = PersonalInformationPagination
     authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
     permission_classes = (IsAuthenticated, DjangoModelPermissions)
+
+    filter_backends = [filters.SearchFilter,  # drf模糊查询
+                       ]
+
+    # drf模糊查询
+    search_fields = ['last_name', 'first_name', 'username', 'email']
 
     def get_queryset(self):
         """设置列表返回数据"""
@@ -265,10 +259,20 @@ class UserInformationList(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         """重写读取方法"""
         instance = self.get_object()
-        if 'permission' in self.request.query_params:
-            permission = self.request.query_params['permission']
-            if permission == 'users':
-                return Response(permission_verify(instance, 'users'))
+        # if 'permission' in self.request.query_params:
+        #     permission = self.request.query_params['permission']
+        #     if permission == 'users':
+        #         return Response(permission_verify(instance, 'users'))
+
+        if 'type' in self.request.query_params:
+            type_data = self.request.query_params['type']
+            if type_data == '当前登录用户':
+                serializer = self.get_serializer(self.request.user)
+                if 'permission' in self.request.query_params:
+                    permission = self.request.query_params['permission']
+                    if permission == 'users':
+                        return Response(permission_verify(self.request.user, 'users'))
+                return Response(serializer.data)
 
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
@@ -286,7 +290,7 @@ class UserInformationNoneList(viewsets.GenericViewSet, mixins.ListModelMixin):
 
 
 # 用户组
-class GroupList(mixins.ListModelMixin, viewsets.GenericViewSet):
+class GroupList(viewsets.ModelViewSet):
     """
         list:用户组
     """
@@ -296,13 +300,49 @@ class GroupList(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated, DjangoModelPermissions)
 
 
-# 所有权限
-class PermissionList(mixins.ListModelMixin, viewsets.GenericViewSet):
+# # 所有权限
+# class PermissionList(mixins.ListModelMixin, viewsets.GenericViewSet):
+#     """
+#      list:权限列表
+#     """
+#     queryset = Permission.objects.all()
+#     serializer_class = PermissionSerializer
+
+
+# 权限列表
+class PermissionList(APIView):
     """
-     list:权限列表
+    list:权限列表
     """
-    queryset = Permission.objects.all()
-    serializer_class = PermissionSerializer
+    authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        """
+        list:民族列表
+        """
+        quanxian = {'add': '增加', 'delete': '删除', 'view': '查看', 'change': '修改'}
+        data = Permission.objects.all()
+        dic_data = []
+        app_name_list = []
+        model_list = []
+        for i in data:
+            name = i.name.split()[1]
+            app_name = apps.get_app_config(i.content_type.app_label).verbose_name
+            if app_name not in app_name_list:
+                app_name_list.append(app_name)
+                dic_data.append({'id': app_name, 'app': app_name, 'model': '', 'authName': app_name, 'level': '一级'})
+            if i.content_type.name not in model_list:
+                model_list.append(i.content_type.name)
+                dic_data.append(
+                    {'id': i.content_type.name, 'app': app_name, 'model': i.content_type.name, 'authName': i.content_type.name,
+                     'level': '二级'})
+            dic_data.append({'id': i.id,
+                             'app': app_name,
+                             'model': i.content_type.name,
+                             'authName': '%s-%s' % (quanxian[name],i.content_type.name),
+                             'level': '三级'})
+        return Response(dic_data)
 
 
 # 登录接口
@@ -350,6 +390,25 @@ class Nation(APIView):
         return Response(nationdata)
 
 
+# 统计
+class TongJi(APIView):
+    """
+    list:数据统计
+    """
+    authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        data = {}
+        pdata = PersonalInformation.objects.filter(is_delete=False).filter(yonggongs__zhuangtai__name='在岗')
+        zzmmlist = [{'name': i.name, 'count': pdata.filter(dangtuans__politics__name=i.name).count()} for i in
+                    Politics.objects.all()]
+        data['all'] = {'在管总人数': pdata.count(), '政治面貌': zzmmlist,
+                       '在岗总人数': pdata.filter(jiediao__name__in=['未借调', '特警支队（工勤）']).count(),
+                       '在编总人数': pdata.filter(bianzhi__name='特警支队').count()}
+        return Response(data)
+
+
 # 党团关系
 class DangTuanList(viewsets.ModelViewSet):
     """
@@ -365,12 +424,48 @@ class DangTuanList(viewsets.ModelViewSet):
 
     filter_class = DangTuanFilter
 
-    # # 动态分配serializer
-    # def get_serializer_class(self):
-    #     if self.action == 'list':
-    #         return DangTuanSerializer
-    #     else:
-    #         return DangTuanAllSerializer
+    def get_queryset(self):
+        """设置列表返回数据"""
+        if self.request is not None and self.request.user.has_perm('users.view_dangtuan'):
+            username = self.request.user
+            if self.request.user.is_superuser or self.request.user.is_staff:
+                '''允许超级管理员/可登录后台用户查看全部信息查看全部信息'''
+                return DangTuan.objects.all()
+            else:
+                role_fenzu = self.request.user.fenzu.all()
+
+                if role_fenzu:
+                    '''大队、中队、小组权限显示'''
+                    return DangTuan.objects.filter(is_delete=False, name__fenzu__in=role_fenzu)
+                else:
+                    '''权限范围到个人，只有本账号访问权限'''
+                    return DangTuan.objects.filter(is_delete=False, name__user=username)
+        else:
+            return DangTuan.objects.filter(name__name='1')
+
+    def destroy(self, request, *args, **kwargs):
+        """重写前端删除方法"""
+        instance = self.get_object()
+        if request.user.is_superuser or request.user.is_staff:
+            if request.query_params['del'] == 'false':
+                """标记删除"""
+                instance.is_delete = True
+                instance.save()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            elif request.query_params['del'] == 'true':
+                """真删除"""
+                self.perform_destroy(instance)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            elif request.query_params['del'] == 'no':
+                """取消删除"""
+                instance.is_delete = False
+                instance.save()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                """不存在"""
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
 
 
 # 用工信息
@@ -378,7 +473,7 @@ class YongGongList(viewsets.ModelViewSet):
     """
     list:用工信息
     """
-    queryset = YongGong.objects.filter(is_delete=False)
+    # queryset = YongGong.objects.filter(is_delete=False)
     serializer_class = YongGongAllSerializer
     authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
     permission_classes = (IsAuthenticated, DjangoModelPermissions)
@@ -388,13 +483,56 @@ class YongGongList(viewsets.ModelViewSet):
 
     filter_class = YongGongFilter
 
+    def get_queryset(self):
+        """设置列表返回数据"""
+        if self.request is not None and self.request.user.has_perm('users.view_dangtuan'):
+            username = self.request.user
+            if self.request.user.is_superuser or self.request.user.is_staff:
+                '''允许超级管理员/可登录后台用户查看全部信息查看全部信息'''
+                return YongGong.objects.all()
+            else:
+                role_fenzu = self.request.user.fenzu.all()
+
+                if role_fenzu:
+                    '''大队、中队、小组权限显示'''
+                    return YongGong.objects.filter(is_delete=False, name__fenzu__in=role_fenzu)
+                else:
+                    '''权限范围到个人，只有本账号访问权限'''
+                    return YongGong.objects.filter(is_delete=False, name__user=username)
+        else:
+            return YongGong.objects.filter(name__name='1')
+
+    def destroy(self, request, *args, **kwargs):
+        """重写前端删除方法"""
+        instance = self.get_object()
+        if request.user.is_superuser or request.user.is_staff:
+            if request.query_params['del'] == 'false':
+                """标记删除"""
+                instance.is_delete = True
+                instance.save()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            elif request.query_params['del'] == 'true':
+                """真删除"""
+                self.perform_destroy(instance)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            elif request.query_params['del'] == 'no':
+                """取消删除"""
+                instance.is_delete = False
+                instance.save()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                """不存在"""
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
 
 # 履历信息
 class LvLiList(viewsets.ModelViewSet):
     """
     list:履历信息
     """
-    queryset = Lvli.objects.filter(is_delete=False)
+    # queryset = Lvli.objects.filter(is_delete=False)
     serializer_class = LvLiSerializer
     authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
     permission_classes = (IsAuthenticated, DjangoModelPermissions)
@@ -404,13 +542,56 @@ class LvLiList(viewsets.ModelViewSet):
 
     filter_class = LvLiFilter
 
+    def get_queryset(self):
+        """设置列表返回数据"""
+        if self.request is not None and self.request.user.has_perm('users.view_dangtuan'):
+            username = self.request.user
+            if self.request.user.is_superuser or self.request.user.is_staff:
+                '''允许超级管理员/可登录后台用户查看全部信息查看全部信息'''
+                return Lvli.objects.all()
+            else:
+                role_fenzu = self.request.user.fenzu.all()
+
+                if role_fenzu:
+                    '''大队、中队、小组权限显示'''
+                    return Lvli.objects.filter(is_delete=False, name__fenzu__in=role_fenzu)
+                else:
+                    '''权限范围到个人，只有本账号访问权限'''
+                    return Lvli.objects.filter(is_delete=False, name__user=username)
+        else:
+            return Lvli.objects.filter(name__name='1')
+
+    def destroy(self, request, *args, **kwargs):
+        """重写前端删除方法"""
+        instance = self.get_object()
+        if request.user.is_superuser or request.user.is_staff:
+            if request.query_params['del'] == 'false':
+                """标记删除"""
+                instance.is_delete = True
+                instance.save()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            elif request.query_params['del'] == 'true':
+                """真删除"""
+                self.perform_destroy(instance)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            elif request.query_params['del'] == 'no':
+                """取消删除"""
+                instance.is_delete = False
+                instance.save()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                """不存在"""
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
 
 # 学历信息
 class EducationList(viewsets.ModelViewSet):
     """
     list:学历信息
     """
-    queryset = Education.objects.filter(is_delete=False)
+    # queryset = Education.objects.filter(is_delete=False)
     serializer_class = EducationAllSerializer
     authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
     permission_classes = (IsAuthenticated, DjangoModelPermissions)
@@ -420,13 +601,56 @@ class EducationList(viewsets.ModelViewSet):
 
     filter_class = EducationFilter
 
+    def get_queryset(self):
+        """设置列表返回数据"""
+        if self.request is not None and self.request.user.has_perm('users.view_dangtuan'):
+            username = self.request.user
+            if self.request.user.is_superuser or self.request.user.is_staff:
+                '''允许超级管理员/可登录后台用户查看全部信息查看全部信息'''
+                return Education.objects.all()
+            else:
+                role_fenzu = self.request.user.fenzu.all()
+
+                if role_fenzu:
+                    '''大队、中队、小组权限显示'''
+                    return Education.objects.filter(is_delete=False, name__fenzu__in=role_fenzu)
+                else:
+                    '''权限范围到个人，只有本账号访问权限'''
+                    return Education.objects.filter(is_delete=False, name__user=username)
+        else:
+            return Education.objects.filter(name__name='1')
+
+    def destroy(self, request, *args, **kwargs):
+        """重写前端删除方法"""
+        instance = self.get_object()
+        if request.user.is_superuser or request.user.is_staff:
+            if request.query_params['del'] == 'false':
+                """标记删除"""
+                instance.is_delete = True
+                instance.save()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            elif request.query_params['del'] == 'true':
+                """真删除"""
+                self.perform_destroy(instance)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            elif request.query_params['del'] == 'no':
+                """取消删除"""
+                instance.is_delete = False
+                instance.save()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                """不存在"""
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
 
 # 车辆信息
-class CarList(viewsets.GenericViewSet, mixins.ListModelMixin):
+class CarList(viewsets.ModelViewSet):
     """
     list:车辆信息
     """
-    queryset = Car.objects.filter(is_delete=False)
+    # queryset = Car.objects.filter(is_delete=False)
     serializer_class = CarSerializer
     authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
     permission_classes = (IsAuthenticated, DjangoModelPermissions)
@@ -436,13 +660,56 @@ class CarList(viewsets.GenericViewSet, mixins.ListModelMixin):
 
     filter_class = CarFilter
 
+    def get_queryset(self):
+        """设置列表返回数据"""
+        if self.request is not None and self.request.user.has_perm('users.view_dangtuan'):
+            username = self.request.user
+            if self.request.user.is_superuser or self.request.user.is_staff:
+                '''允许超级管理员/可登录后台用户查看全部信息查看全部信息'''
+                return Car.objects.all()
+            else:
+                role_fenzu = self.request.user.fenzu.all()
+
+                if role_fenzu:
+                    '''大队、中队、小组权限显示'''
+                    return Car.objects.filter(is_delete=False, name__fenzu__in=role_fenzu)
+                else:
+                    '''权限范围到个人，只有本账号访问权限'''
+                    return Car.objects.filter(is_delete=False, name__user=username)
+        else:
+            return Car.objects.filter(name__name='1')
+
+    def destroy(self, request, *args, **kwargs):
+        """重写前端删除方法"""
+        instance = self.get_object()
+        if request.user.is_superuser or request.user.is_staff:
+            if request.query_params['del'] == 'false':
+                """标记删除"""
+                instance.is_delete = True
+                instance.save()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            elif request.query_params['del'] == 'true':
+                """真删除"""
+                self.perform_destroy(instance)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            elif request.query_params['del'] == 'no':
+                """取消删除"""
+                instance.is_delete = False
+                instance.save()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                """不存在"""
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
 
 # 家庭成员信息
 class HomeInformationList(viewsets.ModelViewSet):
     """
     list:家庭成员信息
     """
-    queryset = HomeInformation.objects.filter(is_delete=False)
+    # queryset = HomeInformation.objects.filter(is_delete=False)
     serializer_class = HomeInformationSerializer
     authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
     permission_classes = (IsAuthenticated, DjangoModelPermissions)
@@ -452,13 +719,56 @@ class HomeInformationList(viewsets.ModelViewSet):
 
     filter_class = HomeInformationFilter
 
+    def get_queryset(self):
+        """设置列表返回数据"""
+        if self.request is not None and self.request.user.has_perm('users.view_dangtuan'):
+            username = self.request.user
+            if self.request.user.is_superuser or self.request.user.is_staff:
+                '''允许超级管理员/可登录后台用户查看全部信息查看全部信息'''
+                return HomeInformation.objects.all()
+            else:
+                role_fenzu = self.request.user.fenzu.all()
+
+                if role_fenzu:
+                    '''大队、中队、小组权限显示'''
+                    return HomeInformation.objects.filter(is_delete=False, name__fenzu__in=role_fenzu)
+                else:
+                    '''权限范围到个人，只有本账号访问权限'''
+                    return HomeInformation.objects.filter(is_delete=False, name__user=username)
+        else:
+            return HomeInformation.objects.filter(name__name='1')
+
+    def destroy(self, request, *args, **kwargs):
+        """重写前端删除方法"""
+        instance = self.get_object()
+        if request.user.is_superuser or request.user.is_staff:
+            if request.query_params['del'] == 'false':
+                """标记删除"""
+                instance.is_delete = True
+                instance.save()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            elif request.query_params['del'] == 'true':
+                """真删除"""
+                self.perform_destroy(instance)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            elif request.query_params['del'] == 'no':
+                """取消删除"""
+                instance.is_delete = False
+                instance.save()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                """不存在"""
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
 
 # 个人体检信息
-class PhysicalExaminationList(viewsets.GenericViewSet, mixins.ListModelMixin):
+class PhysicalExaminationList(viewsets.ModelViewSet):
     """
     list:个人体检信息
     """
-    queryset = PhysicalExamination.objects.filter(is_delete=False)
+    # queryset = PhysicalExamination.objects.filter(is_delete=False)
     serializer_class = PhysicalExaminationSerializer
     authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
     permission_classes = (IsAuthenticated, DjangoModelPermissions)
@@ -468,13 +778,56 @@ class PhysicalExaminationList(viewsets.GenericViewSet, mixins.ListModelMixin):
 
     filter_class = PhysicalExaminationFilter
 
+    def get_queryset(self):
+        """设置列表返回数据"""
+        if self.request is not None and self.request.user.has_perm('users.view_dangtuan'):
+            username = self.request.user
+            if self.request.user.is_superuser or self.request.user.is_staff:
+                '''允许超级管理员/可登录后台用户查看全部信息查看全部信息'''
+                return PhysicalExamination.objects.all()
+            else:
+                role_fenzu = self.request.user.fenzu.all()
+
+                if role_fenzu:
+                    '''大队、中队、小组权限显示'''
+                    return PhysicalExamination.objects.filter(is_delete=False, name__fenzu__in=role_fenzu)
+                else:
+                    '''权限范围到个人，只有本账号访问权限'''
+                    return PhysicalExamination.objects.filter(is_delete=False, name__user=username)
+        else:
+            return PhysicalExamination.objects.filter(name__name='1')
+
+    def destroy(self, request, *args, **kwargs):
+        """重写前端删除方法"""
+        instance = self.get_object()
+        if request.user.is_superuser or request.user.is_staff:
+            if request.query_params['del'] == 'false':
+                """标记删除"""
+                instance.is_delete = True
+                instance.save()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            elif request.query_params['del'] == 'true':
+                """真删除"""
+                self.perform_destroy(instance)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            elif request.query_params['del'] == 'no':
+                """取消删除"""
+                instance.is_delete = False
+                instance.save()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                """不存在"""
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
 
 # 个人量体信息
 class MeasureInformationList(viewsets.ModelViewSet):
     """
     list:个人量体信息
     """
-    queryset = MeasureInformation.objects.filter(is_delete=False)
+    # queryset = MeasureInformation.objects.filter(is_delete=False)
     serializer_class = MeasureInformationSerializer
     authentication_classes = (TokenAuthentication, SessionAuthentication, BasicAuthentication)  # 接口登录验证
     permission_classes = (IsAuthenticated, DjangoModelPermissions)
@@ -484,16 +837,61 @@ class MeasureInformationList(viewsets.ModelViewSet):
 
     filter_class = MeasureInformationFilter
 
+    def get_queryset(self):
+        """设置列表返回数据"""
+        if self.request is not None and self.request.user.has_perm('users.view_dangtuan'):
+            username = self.request.user
+            if self.request.user.is_superuser or self.request.user.is_staff:
+                '''允许超级管理员/可登录后台用户查看全部信息查看全部信息'''
+                return MeasureInformation.objects.all()
+            else:
+                role_fenzu = self.request.user.fenzu.all()
 
-# 验证值是否属于集合当中
-def jiheyanzheng(data, jihe):
-    datalist = []
-    for i in jihe:
-        datalist.append(i[0])
-    if data in datalist:
-        return True
-    else:
-        return False
+                if role_fenzu:
+                    '''大队、中队、小组权限显示'''
+                    return MeasureInformation.objects.filter(is_delete=False, name__fenzu__in=role_fenzu)
+                else:
+                    '''权限范围到个人，只有本账号访问权限'''
+                    return MeasureInformation.objects.filter(is_delete=False, name__user=username)
+        else:
+            return MeasureInformation.objects.filter(name__name='1')
+
+    def destroy(self, request, *args, **kwargs):
+        """重写前端删除方法"""
+        instance = self.get_object()
+        if request.user.is_superuser or request.user.is_staff:
+            if request.query_params['del'] == 'false':
+                """标记删除"""
+                instance.is_delete = True
+                instance.save()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            elif request.query_params['del'] == 'true':
+                """真删除"""
+                self.perform_destroy(instance)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            elif request.query_params['del'] == 'no':
+                """取消删除"""
+                instance.is_delete = False
+                instance.save()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                """不存在"""
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+
+"""
+# # 验证值是否属于集合当中
+# def jiheyanzheng(data, jihe):
+#     datalist = []
+#     for i in jihe:
+#         datalist.append(i[0])
+#     if data in datalist:
+#         return True
+#     else:
+#         return False
+"""
 
 
 # 档案图片

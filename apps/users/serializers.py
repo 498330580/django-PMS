@@ -11,15 +11,6 @@ from rest_framework import serializers
 from users.models import *
 
 
-# 学历信息（读）
-class EducationSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Education
-        exclude = ['name']
-        depth = 1
-
-
 # 学历信息（All）
 class EducationAllSerializer(serializers.ModelSerializer):
 
@@ -28,30 +19,12 @@ class EducationAllSerializer(serializers.ModelSerializer):
         exclude = []
 
 
-# 党团列表（读）
-class DangTuanSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = DangTuan
-        exclude = []
-        depth = 1
-
-
 # 党团列表（读、改、写、删）
 class DangTuanAllSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DangTuan
         exclude = []
-
-
-# 用工信息（读）
-class YongGongSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = YongGong
-        exclude = ['name']
-        depth = 1
 
 
 # 用工信息（读、改、写、删）
@@ -127,12 +100,69 @@ class PersonalInformationSerializer(serializers.ModelSerializer):
         exclude = []
 
 
+# 用工信息（读）
+class YongGongSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = YongGong
+        exclude = ['name']
+        depth = 1
+
+
+# 党团列表（读）
+class DangTuanSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = DangTuan
+        exclude = ['name']
+        depth = 1
+
+
+# 学历信息（读）
+class EducationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Education
+        exclude = ['name']
+        depth = 1
+
+
+# 车辆信息（读）
+class CarRSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Car
+        exclude = ['name']
+        depth = 1
+
+
+# 个人体检信息（读）
+class PhysicalExaminationRSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PhysicalExamination
+        exclude = ['name']
+        depth = 1
+
+
+# 个人量体信息（读）
+class MeasureInformationRSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = MeasureInformation
+        exclude = ['name']
+        depth = 1
+
+
 # 个人档案信息(读)
 class PersonalInformationListSerializer(serializers.ModelSerializer):
     """列表、单独读取使用"""
     dangtuans = DangTuanSerializer(many=True, read_only=True)
     yonggongs = YongGongSerializer(many=True, read_only=True)
     educations = EducationSerializer(many=True, read_only=True)
+    car = CarRSerializer(many=True, read_only=True)
+    tj = PhysicalExaminationRSerializer(many=True, read_only=True)
+    lt = MeasureInformationRSerializer(many=True, read_only=True)
 
     class Meta:
         model = PersonalInformation
